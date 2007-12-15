@@ -1,0 +1,29 @@
+This is the collection of files in the /org/ddtp.debian.net directory on
+churro. It's an odd collection performing a number of tasks. Whether this is
+the right place for them in debatable, but I (kleptog) couldn't come up with
+something. Perhaps after the server reorganisation it will be clearer.
+
+db2file.pl - Exports the translations into a hierachy of files on disk
+db2po.pl - Exports the translations into a hierarchy of po files on disk
+db2po.sh - Script to drive db2po.pl for each language
+db2status_page.cgi - Produces a big table of translations (is this used?)
+db2Translation.pl - Generates the Translation file for a given dist/lang
+db2Translation.sh - Drives the previous script for each language, and builds web tree
+db2web.pl - Generates the DDTP package webpages for a specific prefix (character)
+db2web.sh - Generates the DDTP website. Uses previous script and gnuplot for
+            the graphs
+db_change_lang.pl - Fixes the DB for pt_PT -> pt coversion
+db_del_lang.pl - Deletes a language from the DB
+ddt.cgi - The actual CGI script for the dynamic output of DDTP
+Packages2db.pl - Takes a given package file and loads it into the DB
+Packages2db.sh - Fetches the packages file for all dist/arch and imports them
+sql_layout.txt - Schema of DDTP database
+stat.pl - Generates global stats for db2web.sh
+TODO - obvious
+Translation2db.pl - Imports a translation file into the DB
+Translation2db.sh - Drives Translation2db.pl for each language/dist
+update.sh - Cronjob script to update the website and process Packages files daily
+
+The shell scripts in general expect a certain directory structure. At least
+there should be a 'www' symlink to the web home of the DDTP. That's also
+where the actual ddt.cgi should live.
