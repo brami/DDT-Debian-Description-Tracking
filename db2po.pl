@@ -35,7 +35,7 @@ sub get_description_ids {
 
 	my @description_ids;
 
-	my $sth = $dbh->prepare("SELECT description_id FROM description_tag_tb WHERE tag='$tag' and date_end=CURRENT_DATE");
+	my $sth = $dbh->prepare("SELECT description_id FROM description_tag_tb WHERE tag='$tag' and date_end=(SELECT max(date_end) FROM description_tag_tb WHERE tag='$tag')");
 	$sth->execute;
 	while(($description_id) = $sth->fetchrow_array) {
 		push @description_ids,$description_id;
@@ -122,7 +122,7 @@ foreach (get_description_ids($dists)) {
 	} else {
 		($dir) = ($source =~ /^(.)/);
 	}
-	# print "Source: $source\n";
+	#print "Source: $source\n";
 	#print "Package: $package\n";
 	#print "Dir: $dir\n";
 	mkdir "pos";
@@ -130,7 +130,7 @@ foreach (get_description_ids($dists)) {
 	mkdir "pos/$lang/$dists";
 	mkdir "pos/$lang/$dists/$dir";
 	mkdir "pos/$lang/$dists/$dir/$source";
-	open  (FILE, ">>pos/$lang/$dists/$dir/$source/$package.po") or die "po-file";
+	open  (FILE, ">pos/$lang/$dists/$dir/$source/$package.po") or die "po-file";
 	print FILE "msgid \"\"\n";
 	print FILE "msgstr \"\"\n";
 	print FILE "\"Project-Id-Version: $package\\n\"\n";
@@ -146,11 +146,13 @@ foreach (get_description_ids($dists)) {
 	print FILE "\n";
 	foreach $index (0 .. $#parts) {
 		$parts[$index] =~ s/^$//mg;
+		$parts[$index] =~ s/\\/\\\\/mg;
 		$parts[$index] =~ s/"/\\"/mg;
 		$parts[$index] =~ s/^/\"/mg;
 		$parts[$index] =~ s/$/\\n\"/mg;
 		if ($translation) {
 			$tparts[$index] =~ s/^$//mg;
+			$tparts[$index] =~ s/\\/\\\\/mg;
 			$tparts[$index] =~ s/"/\\"/mg;
 			$tparts[$index] =~ s/^/\"/mg;
 			$tparts[$index] =~ s/$/\\n\"/mg;
