@@ -1,0 +1,95 @@
+
+DROP TABLE owner_tb;
+
+DROP TABLE active_tb;
+
+DROP TABLE ppart_tb;
+DROP TABLE part_tb;
+
+DROP TABLE translation_tb;
+DROP TABLE description_tag_tb;
+DROP TABLE description_tb;
+
+
+
+CREATE TABLE description_tb
+(
+  description_id serial PRIMARY KEY ,
+  description_md5 text NOT NULL UNIQUE,
+  description text NOT NULL,
+  prioritize integer DEFAULT 10,
+  package text NOT NULL,
+  source text NOT NULL
+);
+CREATE INDEX description_tb_1_IDX ON description_tb (package);
+
+CREATE TABLE description_tag_tb
+(
+  description_tag_id serial PRIMARY KEY ,
+  description_id integer NOT NULL REFERENCES description_tb,
+  tag text NOT NULL,
+  date_begin date NOT NULL,
+  date_end date NOT NULL
+);
+CREATE INDEX description_tag_tb_1_IDX ON description_tag_tb (description_id,tag);
+CREATE INDEX description_tag_tb_2_IDX ON description_tag_tb (description_id);
+
+CREATE TABLE part_tb
+(
+  part_id serial PRIMARY KEY ,
+  part_md5 text NOT NULL,
+  part text NOT NULL,
+  language text NOT NULL
+);
+CREATE INDEX part_tb_1_IDX ON part_tb (language);
+CREATE INDEX part_tb_2_IDX ON part_tb (part_md5);
+CREATE UNIQUE INDEX part_tb_3_IDX ON part_tb (part_md5,language);
+
+CREATE TABLE part_description_tb
+(
+  part_description_id serial PRIMARY KEY ,
+  description_id integer NOT NULL REFERENCES description_tb,
+  part_md5 text NOT NULL 
+);
+CREATE INDEX part_description_tb_1_IDX ON part_description_tb (part_md5);
+CREATE UNIQUE INDEX part_description_tb_2_IDX ON part_description_tb (part_md5,description_id);
+
+CREATE TABLE ppart_tb
+(
+  ppart_id serial PRIMARY KEY ,
+  ppart_md5 text NOT NULL,
+  ppart text NOT NULL,
+  language text NOT NULL
+);
+CREATE INDEX ppart_tb_1_IDX ON ppart_tb (language);
+CREATE INDEX ppart_tb_2_IDX ON part_tb (ppart_md5);
+CREATE UNIQUE INDEX ppart_tb_3_IDX ON part_tb (ppart_md5,language);
+
+CREATE TABLE translation_tb
+(
+  translation_id serial PRIMARY KEY ,
+  translation text NOT NULL,
+  language text NOT NULL,
+  description_id integer NOT NULL REFERENCES description_tb
+);
+CREATE INDEX translation_tb_1_IDX ON translation_tb (language);
+CREATE UNIQUE INDEX translation_tb_2_IDX ON translation_tb (description_id,language);
+
+CREATE TABLE active_tb
+(
+  description_id integer NOT NULL REFERENCES description_tb
+);
+CREATE UNIQUE INDEX active_tb_1_IDX ON active_tb (description_id);
+
+CREATE TABLE owner_tb
+(
+  owner_id serial PRIMARY KEY ,
+  owner text NOT NULL,
+  language text NOT NULL,
+  lastsend date NOT NULL,
+  lastseen date DEFAULT '2000-01-01',
+  description_id integer NOT NULL REFERENCES description_tb
+);
+CREATE INDEX owner_tb_1_IDX ON owner_tb (language);
+CREATE INDEX owner_tb_2_IDX ON owner_tb (owner);
+CREATE UNIQUE INDEX owner_tb_3_IDX ON owner_tb (description_id,language);
