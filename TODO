@@ -1,3 +1,6 @@
 * fix db2po.pl: on translated po we have a extra line 
+* Splitting descriptions more intelligently. In particular examples like
+  texlive-latex-extra which have gigantic lists. Ideally you'd want to split
+  each list element into an individual string/part.
 * Detect when description changes just a version or something else
   untranslatable.
