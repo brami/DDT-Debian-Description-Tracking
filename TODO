@@ -1,1 +1,3 @@
 * fix db2po.pl: on translated po we have a extra line 
+* Detect when description changes just a version or something else
+  untranslatable.
