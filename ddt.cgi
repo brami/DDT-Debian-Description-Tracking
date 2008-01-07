@@ -4,11 +4,14 @@ use diagnostics;
 use strict;
 
 use DBI;
-use CGI qw/:standard escape escapeHTML/;
+use CGI qw/:standard escape escapeHTML charset/;
 use Digest::MD5 qw(md5_hex);
 use Text::Diff;
 
 my $start= shift(@ARGV);
+
+my $cgi = new CGI;
+$cgi->charset("UTF-8");
 
 my @DSN = ("DBI:Pg:dbname=ddtp", "", "");
 
@@ -120,7 +123,7 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	print "Source: <a href=\"ddt.cgi?source=".escape($source)."\">$source</a>\n";	
 	print "Package: <a href=\"ddt.cgi?package=".escape($package)."\">$package</a>\n";	
 	print "Prioritize: $prioritize\n";	
-	print "Description: ",escapeHTML($description);	
+	print "Description: ",$cgi->escapeHTML($description);	
 	print "</pre>\n";	
 	print "<br>\n";
 
@@ -240,7 +243,7 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	print "Source: <a href=\"ddt.cgi?source=".escape($source)."\">$source</a>\n";	
 	print "Package: <a href=\"ddt.cgi?package=".escape($package)."\">$package</a>\n";	
 	print "Prioritize: $prioritize\n";	
-	print "Description: ",escapeHTML($description);	
+	print "Description: ",$cgi->escapeHTML($description);	
 	print "</pre>\n";	
 
 	print "The $language-translation:<br>\n";
@@ -250,7 +253,7 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	($translation) = $sth->fetchrow_array ;
 
 	print "<pre>\n";	
-	print "Description-$language: ",escapeHTML($translation);
+	print "Description-$language: ",$cgi->escapeHTML($translation);
 	print "</pre>\n";	
 
 	print "<br>\n";
@@ -521,15 +524,15 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	print "<h3>diff from <a href=\"ddt.cgi?desc_id=$diff1\">$diff1</a> and <a href=\"ddt.cgi?desc_id=$diff2\">$diff2</a></h3>\n";	
 	print "<pre>\n";	
 
-	print "Description: ",escapeHTML($description1);
+	print "Description: ",$cgi->escapeHTML($description1);
 	print "</pre>\n";	
 	print "<pre>\n";	
-	print "Description: ",escapeHTML($description2);
+	print "Description: ",$cgi->escapeHTML($description2);
 	print "</pre>\n";	
 
 	my $diff = diff \$description1, \$description2, { FILENAME_A=>"$diff1", MTIME_A=>0, FILENAME_B=>"$diff2", MTIME_B=>0 };
 	print "<pre>\n";	
-	print escapeHTML($diff);
+	print $cgi->escapeHTML($diff);
 	print "</pre>\n";	
 	
 	if ($language) {
@@ -541,7 +544,7 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 		($translation) = $sth->fetchrow_array ;
 	
 		print "<pre>\n";	
-		print "Description-$language: ",escapeHTML($translation);
+		print "Description-$language: ",$cgi->escapeHTML($translation);
 		print "</pre>\n";	
 	}
 
@@ -569,7 +572,7 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	print_link_list;
 	print "<h3>$part_md5</h3>\n";	
 	print "<pre>\n";	
-	print "Part:\n",escapeHTML($part);
+	print "Part:\n",$cgi->escapeHTML($part);
 	print "</pre>\n";	
 
 	$sth = $dbh->prepare("SELECT language FROM part_tb WHERE part_md5=?");
