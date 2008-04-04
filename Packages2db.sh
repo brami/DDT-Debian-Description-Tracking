@@ -13,7 +13,7 @@ for part in $PART
 do
 	for arch in $DISTS
 	do
-		file="Packages_${distribution}_$arch"
+		file="Packages_${distribution}_${part}_${arch}"
 
 		echo `date`: ${distribution}/$arch
 		[ -s $file.bz2 ] && mv $file.bz2 Packages.bz2
@@ -40,7 +40,7 @@ for part in $PART
 do
 	for arch in $DISTS
 	do
-		file="Packages_${distribution}_$arch"
+		file="Packages_${distribution}_${part}_${arch}"
 
 		echo `date`: ${distribution}/$arch
 		[ -s $file.bz2 ] && mv $file.bz2 Packages.bz2
@@ -71,7 +71,7 @@ for part in $PART
 do
 	for arch in $DISTS
 	do
-		file="Packages_${distribution}_$arch"
+		file="Packages_${distribution}_${part}_${arch}"
 
 		echo `date`: ${distribution}/$arch
 		[ -s $file.bz2 ] && mv $file.bz2 Packages.bz2
