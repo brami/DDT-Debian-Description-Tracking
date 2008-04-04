@@ -6,25 +6,29 @@ cd ~ddtp/Packages
 
 #DISTS="alpha amd64 arm hppa hurd-i386 i386 ia64 m68k mips mipsel powerpc s390 sparc"
 DISTS="alpha amd64 arm hppa i386 ia64 mips mipsel powerpc s390 sparc"
+PART="main contrib"
 
 distribution="etch"
-for arch in $DISTS
+for part in $PART
 do
-	file="Packages_${distribution}_$arch"
+	for arch in $DISTS
+	do
+		file="Packages_${distribution}_$arch"
 
-	echo `date`: ${distribution}/$arch
-	[ -s $file.bz2 ] && mv $file.bz2 Packages.bz2
-	wget -q -m -nd http://ftp.de.debian.org/debian/dists/${distribution}/main/binary-$arch/Packages.bz2
-	mv Packages.bz2 $file.bz2
-	echo `date`: Packages file downloaded
+		echo `date`: ${distribution}/$arch
+		[ -s $file.bz2 ] && mv $file.bz2 Packages.bz2
+		wget -q -m -nd http://ftp.de.debian.org/debian/dists/${distribution}/${part}/binary-$arch/Packages.bz2
+		mv Packages.bz2 $file.bz2
+		echo `date`: Packages file downloaded
 
-	bunzip2 -k -f $file.bz2
-	echo `date`: Packages bunzip2
+		bunzip2 -k -f $file.bz2
+		echo `date`: Packages bunzip2
 
-	$INPORT2DB $file $distribution $arch
-	echo `date`: data in db
+		$INPORT2DB $file $distribution $arch
+		echo `date`: data in db
 
-	rm -f $file
+		rm -f $file
+	done
 done
 # Regular vacuum to cut disk usage
 psql ddtp -c "VACUUM"
@@ -32,23 +36,26 @@ psql ddtp -c "VACUUM"
 DISTS="alpha amd64 arm hppa i386 ia64 mips mipsel powerpc s390 sparc"
 
 distribution="lenny"
-for arch in $DISTS
+for part in $PART
 do
-	file="Packages_${distribution}_$arch"
+	for arch in $DISTS
+	do
+		file="Packages_${distribution}_$arch"
 
-	echo `date`: ${distribution}/$arch
-	[ -s $file.bz2 ] && mv $file.bz2 Packages.bz2
-	wget -q -m -nd http://ftp.de.debian.org/debian/dists/${distribution}/main/binary-$arch/Packages.bz2
-	mv Packages.bz2 $file.bz2
-	echo `date`: Packages file downloaded
+		echo `date`: ${distribution}/$arch
+		[ -s $file.bz2 ] && mv $file.bz2 Packages.bz2
+		wget -q -m -nd http://ftp.de.debian.org/debian/dists/${distribution}/${part}/binary-$arch/Packages.bz2
+		mv Packages.bz2 $file.bz2
+		echo `date`: Packages file downloaded
 
-	bunzip2 -k -f $file.bz2
-	echo `date`: Packages bunzip2
+		bunzip2 -k -f $file.bz2
+		echo `date`: Packages bunzip2
 
-	$INPORT2DB $file $distribution $arch
-	echo `date`: data in db
+		$INPORT2DB $file $distribution $arch
+		echo `date`: data in db
 
-	rm -f $file
+		rm -f $file
+	done
 done
 # Regular vacuum to cut disk usage
 psql ddtp -c "VACUUM"
@@ -60,23 +67,26 @@ psql ddtp -c "TRUNCATE part_description_tb"
 DISTS="alpha amd64 arm hppa i386 ia64 m68k mips mipsel powerpc s390 sparc"
 
 distribution="sid"
-for arch in $DISTS
+for part in $PART
 do
-	file="Packages_${distribution}_$arch"
+	for arch in $DISTS
+	do
+		file="Packages_${distribution}_$arch"
 
-	echo `date`: ${distribution}/$arch
-	[ -s $file.bz2 ] && mv $file.bz2 Packages.bz2
-	wget -q -m -nd http://ftp.de.debian.org/debian/dists/${distribution}/main/binary-$arch/Packages.bz2
-	mv Packages.bz2 $file.bz2
-	echo `date`: Packages file downloaded
+		echo `date`: ${distribution}/$arch
+		[ -s $file.bz2 ] && mv $file.bz2 Packages.bz2
+		wget -q -m -nd http://ftp.de.debian.org/debian/dists/${distribution}/${part}/binary-$arch/Packages.bz2
+		mv Packages.bz2 $file.bz2
+		echo `date`: Packages file downloaded
 
-	bunzip2 -k -f $file.bz2
-	echo `date`: Packages bunzip2
+		bunzip2 -k -f $file.bz2
+		echo `date`: Packages bunzip2
 
-	$INPORT2DB $file $distribution $arch
-	echo `date`: data in db
+		$INPORT2DB $file $distribution $arch
+		echo `date`: data in db
 
-        rm -f $file
+		rm -f $file
+	done
 done
 # Regular vacuum to cut disk usage
 psql ddtp -c "VACUUM"
