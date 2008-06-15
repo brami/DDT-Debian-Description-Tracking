@@ -20,7 +20,7 @@ do
 done
 
 echo "<hr>" >> www/index.html.new
-echo "<a href=\"http://kleptog.org/cgi-bin/ddtss2-cgi\">to the ddtss (a web interface for the ddtp)<a/><br>" >> www/index.html.new
+echo "<a href=\"http://ddtp.debian.net/ddtss/index.cgi/\">to the ddtss (a web interface for the ddtp)<a/><br>" >> www/index.html.new
 echo "Daily description translation stats for <a href='stats/stats-etch.html'>Etch</a>, <a href='stats/stats-lenny.html'>Lenny</a> and <a href='stats/stats-sid.html'>Sid</a>" >> www/index.html.new
 echo "<hr>" >> www/index.html.new
 echo "<a href=\"http://www.debian.org/international/l10n/ddtp\">Documentation about DDTP and DDTSS<a/>" >> www/index.html.new
