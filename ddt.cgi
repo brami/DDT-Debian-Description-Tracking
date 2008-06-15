@@ -8,8 +8,6 @@ use CGI qw/:standard escape escapeHTML charset/;
 use Digest::MD5 qw(md5_hex);
 use Text::Diff;
 
-my $start= shift(@ARGV);
-
 my $cgi = new CGI;
 $cgi->charset("UTF-8");
 
@@ -94,6 +92,38 @@ sub own_a_description ($$$) {
 	}
 }
 
+# Sanitize all paramaters to this script, anything we don't recognise is thrown out.
+sub sanitize_params
+{
+  my %params = @_;
+  for my $param (param())
+  {
+    if( not defined $params{$param} )
+    { CGI::delete($param); next; }
+    my $val = param($param);
+    if( $val !~ $params{$param} )
+    { CGI::delete($param); next }
+  }
+}
+
+my $PACKAGE_NAME = qr/^[\w.+-]+$/;
+my $LANGUAGE_NAME = qr/^[a-zA-z_]+$/;
+sanitize_params(  
+    'desc_id' => qr/^\d+$/, 
+    'language' => $LANGUAGE_NAME, 
+    'getuntrans' => $LANGUAGE_NAME, 
+    'getpountrans' => $LANGUAGE_NAME, 
+    'allpackages' => $LANGUAGE_NAME, 
+    'getone' => $LANGUAGE_NAME, 
+    'alltranslatedpackages' => $LANGUAGE_NAME, 
+    'alltranslatedpackages' => $LANGUAGE_NAME, 
+    'alluntranslatedpackages' => $LANGUAGE_NAME, 
+    'package' => $PACKAGE_NAME, 
+    'diff1' => $PACKAGE_NAME, 
+    'diff2' => $PACKAGE_NAME, 
+    'source' => $PACKAGE_NAME,
+    'part_md5' => qr/^[a-f0-9]+$/, 
+);
 
 if (param('desc_id') and not param('language') and not param('getuntrans') and not param('getpountrans') ) {
 
