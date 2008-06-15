@@ -95,5 +95,7 @@ cd ~ddtp
 pg_dump ddtp | gzip > pg_dump/pg_ddts.dump.gz
 cp -a pg_dump/pg_ddts.dump.gz www/source/pg_ddts_current.dump.gz
 
+chmod 644 pg_dump/pg_ddts.dump.gz www/source/pg_ddts_current.dump.gz
+
 # rotate the pg-dump
 /usr/sbin/logrotate --state /org/ddtp.debian.net/lib/logrotate.state /org/ddtp.debian.net/logrotate.config
