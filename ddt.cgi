@@ -119,8 +119,8 @@ sanitize_params(
     'alltranslatedpackages' => $LANGUAGE_NAME, 
     'alluntranslatedpackages' => $LANGUAGE_NAME, 
     'package' => $PACKAGE_NAME, 
-    'diff1' => $PACKAGE_NAME, 
-    'diff2' => $PACKAGE_NAME, 
+    'diff1' => qr/^\d+$/, 
+    'diff2' => qr/^\d+$/, 
     'source' => $PACKAGE_NAME,
     'part_md5' => qr/^[a-f0-9]+$/, 
 );
