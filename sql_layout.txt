@@ -1,4 +1,8 @@
 
+DROP TABLE packages_tb;
+
+DROP TABLE version_tb;
+
 DROP TABLE owner_tb;
 
 DROP TABLE active_tb;
@@ -93,3 +97,29 @@ CREATE TABLE owner_tb
 CREATE INDEX owner_tb_1_IDX ON owner_tb (language);
 CREATE INDEX owner_tb_2_IDX ON owner_tb (owner);
 CREATE UNIQUE INDEX owner_tb_3_IDX ON owner_tb (description_id,language);
+
+CREATE TABLE version_tb
+(
+  version_id serial PRIMARY KEY ,
+  version text NOT NULL,
+  description_id integer NOT NULL REFERENCES description_tb
+);
+CREATE INDEX version_tb_1_IDX ON version_tb (description_id);
+CREATE UNIQUE INDEX version_tb_3_IDX ON version_tb (description_id,version);
+
+CREATE TABLE packages_tb
+(
+  packages_id serial PRIMARY KEY ,
+  package text NOT NULL,
+  source text NOT NULL,
+  version text NOT NULL,
+  tag text ,
+  priority text NOT NULL,
+  maintainer text NOT NULL,
+  task text ,
+  section text NOT NULL,
+  description text NOT NULL,
+  description_md5 text NOT NULL
+);
+CREATE INDEX package_tb_1_IDX ON packages_tb (package);
+CREATE UNIQUE INDEX package_tb_3_IDX ON packages_tb (package,version);
