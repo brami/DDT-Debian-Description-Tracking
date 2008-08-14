@@ -5,10 +5,23 @@ cd ~
 rm -rf pos
 mkdir -p pos
 
-#for distribution in etch sid
-for distribution in sid
+if [ "x$1" = "x" ]
+then
+	LANGS=`psql ddtp -q -A -t -c "select distinct language from translation_tb"`
+else
+	LANGS=$1
+fi
+
+if [ "x$2" = "x" ]
+then
+	DISTRIBUTIONS=lenny etch sid
+else
+	DISTRIBUTIONS=$2
+fi
+
+for distribution in $DISTRIBUTIONS
 do
-	for lang in cs da de eo es fi fr go hu it ja km_KH ko nl pl pl_PL pt_BR pt_PT ru sk sv uk zh_CN zh_TW
+	for lang in $LANGS
 	do
 		./db2po.pl $distribution $lang 
 		echo `date`: create the $lang po for $distribution
