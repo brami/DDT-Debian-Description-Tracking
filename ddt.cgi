@@ -92,6 +92,21 @@ sub own_a_description ($$$) {
 	}
 }
 
+sub get_versions ($) {
+	my $desc_id = shift;
+
+	my @versions=();
+
+	my $sth = $dbh->prepare("SELECT version FROM version_tb WHERE description_id=?");
+	$sth->execute($desc_id);
+
+	my $version;
+	while(($version) = $sth->fetchrow_array) {
+		push @versions,$version;
+	}
+	return (@versions);
+}
+
 # Sanitize all paramaters to this script, anything we don't recognise is thrown out.
 sub sanitize_params
 {
@@ -134,6 +149,8 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 
 	my $description_id=param('desc_id');
 
+	my @versions=get_versions($description_id);
+
 	my $sth = $dbh->prepare("SELECT description,prioritize,package,source FROM description_tb WHERE description_id=?");
 	$sth->execute($description_id);
 
@@ -152,6 +169,7 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	print "<pre>\n";	
 	print "Source: <a href=\"ddt.cgi?source=".escape($source)."\">$source</a>\n";	
 	print "Package: <a href=\"ddt.cgi?package=".escape($package)."\">$package</a>\n";	
+	print "Versions: " . join(", ",@versions) . "\n";	
 	print "Prioritize: $prioritize\n";	
 	print "Description: ",$cgi->escapeHTML($description);	
 	print "</pre>\n";	
@@ -254,6 +272,8 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	my $description_id=param('desc_id');
 	my $language=param('language');
 
+	my @versions=get_versions($description_id);
+
 	my $sth = $dbh->prepare("SELECT description,prioritize,package,source FROM description_tb WHERE description_id=?");
 	$sth->execute($description_id);
 
@@ -272,6 +292,7 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	print "<pre>\n";	
 	print "Source: <a href=\"ddt.cgi?source=".escape($source)."\">$source</a>\n";	
 	print "Package: <a href=\"ddt.cgi?package=".escape($package)."\">$package</a>\n";	
+	print "Versions: " . join(", ",@versions) . "\n";	
 	print "Prioritize: $prioritize\n";	
 	print "Description: ",$cgi->escapeHTML($description);	
 	print "</pre>\n";	
@@ -321,6 +342,8 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	my $description_id=param('desc_id');
 	my $language=param('getuntrans');
 
+	my @versions=get_versions($description_id);
+
 	my $sth = $dbh->prepare("SELECT A.description,A.prioritize,A.package,A.source,B.description_id,O.owner FROM (description_tb AS A LEFT JOIN active_tb AS B ON A.description_id=B.description_id) LEFT JOIN (SELECT owner,description_id FROM owner_tb WHERE language=?) AS O ON A.description_id=O.description_id WHERE A.description_id=?");
 	$sth->execute($language,$description_id);
 
@@ -330,6 +353,7 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	print "\n";	
 	print "# Source: $source\n";	
 	print "# Package: $package\n";	
+	print "# Versions: " . join(", ",@versions) . "\n";	
 	if ($active) {
 		print "# This Description is active\n";
 	}
@@ -415,6 +439,8 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	my $description_id=param('desc_id');
 	my $language=param('getpountrans');
 
+	my @versions=get_versions($description_id);
+
 	my $sth = $dbh->prepare("SELECT A.description,A.prioritize,A.package,A.source,B.description_id,O.owner FROM (description_tb AS A LEFT JOIN active_tb AS B ON A.description_id=B.description_id) LEFT JOIN (SELECT owner,description_id FROM owner_tb WHERE language=?) AS O ON A.description_id=O.description_id WHERE A.description_id=?");
 	$sth->execute($language,,$description_id);
 
@@ -439,6 +465,7 @@ if (param('desc_id') and not param('language') and not param('getuntrans') and n
 	print "\n";	
 	print "#: Source: $source\n";	
 	print "#: Package: $package\n";	
+	print "#: Versions: " . join(", ",@versions) . "\n";	
 	if ($active) {
 		print "#  This Description is active\n";
 	}

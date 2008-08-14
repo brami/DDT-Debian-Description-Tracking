@@ -61,6 +61,7 @@ sub scan_packages_file {
 	my $source;
 	my $priority;
 	my $section;
+	my $version;
 
 	sub get_old_description_id {
 		my $package= shift(@_);
@@ -105,6 +106,27 @@ sub scan_packages_file {
 		};
 		if ($@) {
 			$dbh->rollback; # undo the incomplete changes
+		}
+	}
+
+	sub save_version_to_db {
+		my $description_id= shift(@_);
+		my $version= shift(@_);
+		
+		my $version_id;
+
+		my $sth = $dbh->prepare("SELECT version_id FROM version_tb WHERE description_id=? and version=?");
+		$sth->execute($description_id, $version);
+		($version_id) = $sth->fetchrow_array;
+
+		if (undef $version_id) {
+			eval {
+				$dbh->do("INSERT INTO version_tb (description_id,version) VALUES (?,?);", undef, $description_id, $version);
+				$dbh->commit;   # commit the changes if we get this far
+			};
+			if ($@) {
+				$dbh->rollback; # undo the incomplete changes
+			}
 		}
 	}
 
@@ -156,6 +178,9 @@ sub scan_packages_file {
 				warn "Transaction aborted because $@";
 				$dbh->rollback; # undo the incomplete changes
 			}
+			if (($description_id)) {
+				save_version_to_db($description_id,$version);
+			}
 			if (($description_id) and ($distribution eq 'sid')) {
 				save_active_to_db($description_id);
 
@@ -179,6 +204,7 @@ sub scan_packages_file {
 			$package=$1;
 			$source=$1;
 			$prioritize=40;
+			$version="1";
 			$prioritize -= 1 if $package =~ /^(linux|kernel)-/i;
 			$prioritize -= 1 if $package =~ /^(linux|kernel)-source/i;
 			$prioritize -= 2 if $package =~ /^(linux|kernel)-patch/i;
@@ -190,6 +216,9 @@ sub scan_packages_file {
 		}
 		if (/^Source: ([\w.+-]+)/) { # new item
 			$source=$1;
+		}
+		if (/^Version: ([\w.+-]+)/) { # new item
+			$version=$1;
 		}
 		if (/^Tag: (.+)/) { # new item
 			$tag=$1;
