@@ -2,8 +2,8 @@
 
 cd ~ddtp
 
-./Packages2packages_tb.sh
-./Packages2db.sh
+#./Packages2packages_tb.sh
+#./Packages2db.sh
 ./db2web.sh
 # ./db2Translation.sh
 ./file2Translation.sh
@@ -15,6 +15,6 @@ cd ~ddtp
 
 #cp -a /home/grisu/public_html/ddtp/* /var/www/ddtp/
 
-/usr/sbin/logrotate --state /org/ddtp.debian.net/lib/logrotate.state /org/ddtp.debian.net/logrotate.config
+#/usr/sbin/logrotate --state /org/ddtp.debian.net/lib/logrotate.state /org/ddtp.debian.net/logrotate.config
 
 date
