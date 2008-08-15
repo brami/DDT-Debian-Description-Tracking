@@ -16,10 +16,6 @@ die $DBI::errstr unless $dbh;
 
 my $data = "/org/ddtp.debian.net/Packages/";
 
-my $DIST = shift || "etch";
-my $SECTION = shift || "main";
-my $ARCH = shift || "i386";
-
 my %descrmd5;        # $descrmd5{$md5} = $desc_id, represents all known descriptions
 my %descrlist;       # $descrlist{$package}{$md5} exists for each package in package file
                      # $descrlist{$package}{priority} = package priority
@@ -31,8 +27,8 @@ exit;
 
 sub load_packages
 {
-  print STDERR "Loading package file Packages_${DIST}_${SECTION}_${ARCH}.bz2";
-  my $fh = open_bz2_file( "$data/Packages_${DIST}_${SECTION}_${ARCH}.bz2" );
+  print STDERR " Loading package file ";
+  my $fh = open_stdin( );
   parse_header_format( $fh, \&process_package );
   close $fh;
   my $sth = $dbh->prepare("SELECT count(packages_id) FROM packages_tb");
@@ -72,13 +68,11 @@ sub process_package
   }
 }
 
-sub open_bz2_file
+sub open_stdin
 {
-  my $file = shift;
- 
   my $fh;
  
-  open $fh, "bzcat $file |" or die "Couldn't open $file ($!)\n";
+  open $fh, "</dev/stdin" or die "Couldn't open /dev/stdin ($!)\n";
   
   return $fh;
 }

@@ -37,12 +37,14 @@ do
 
 		for arch in $DISTS
 		do
-			[ -f Packages/Packages_${distribution}_${part}_${arch}.bz2 ] && echo -n `date` :
-			[ -f Packages/Packages_${distribution}_${part}_${arch}.bz2 ] && $INPORT2DB $distribution $part $arch
-			[ -f Packages/Packages_${distribution}_${part}_${arch}.bz2 ] || echo no Packages_${distribution}_${part}_${arch}.bz2 
+			file="Packages/Packages_${distribution}_${part}_${arch}.bz2"
+
+			[ -f $file ] && echo -n `date` : $file
+			[ -f $file ] && bzcat $file | $INPORT2DB
+			[ -f $file ] || echo no $file
 		done
 
-		$DB2FILE $distribution $part
+		$DB2FILE > $file
 	done
 done
 # Regular vacuum to cut disk usage

@@ -32,8 +32,8 @@ sub export_packages
 {
   my ($package,$source,$version,$tag,$priority,$maintainer,$task,$section,$description);
 
-  print STDERR "Export package file Packages_${DIST}_${SECTION}.bz2\n";
-  my $fh = open_bz2_file( "$data/Packages_${DIST}_${SECTION}.bz2" );
+  print STDERR " Export package file \n";
+  my $fh = open_stdout( );
 
   my $sth = $dbh->prepare("SELECT package,source,version,tag,priority,maintainer,task,section,description FROM packages_tb ORDER BY package");
   $sth->execute;
@@ -53,13 +53,11 @@ sub export_packages
 }
 
 # Helper for load_packages
-sub open_bz2_file
+sub open_stdout
 {
-  my $file = shift;
- 
   my $fh;
  
-  open $fh, "| bzip2 > $file " or die "Couldn't open $file ($!)\n";
+  open $fh, "| bzip2 " or die "Couldn't open stdout ($!)\n";
   
   return $fh;
 }
