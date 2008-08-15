@@ -119,7 +119,7 @@ sub scan_packages_file {
 		$sth->execute($description_id, $version);
 		($version_id) = $sth->fetchrow_array;
 
-		if (undef $version_id) {
+		if (not $version_id) {
 			eval {
 				$dbh->do("INSERT INTO version_tb (description_id,version) VALUES (?,?);", undef, $description_id, $version);
 				$dbh->commit;   # commit the changes if we get this far
@@ -217,7 +217,7 @@ sub scan_packages_file {
 		if (/^Source: ([\w.+-]+)/) { # new item
 			$source=$1;
 		}
-		if (/^Version: ([\w.+-]+)/) { # new item
+		if (/^Version: ([\w.+:~-]+)/) { # new item
 			$version=$1;
 		}
 		if (/^Tag: (.+)/) { # new item
@@ -242,6 +242,12 @@ sub scan_packages_file {
 				$prioritize+=15;
 			} elsif ($priority  =~ /required/i ) {
 				$prioritize+=20;
+			}
+			if ($distribution  =~ /sid/i ) {
+				$prioritize+=2;
+			}
+			if ($distribution  =~ /lliurex/i ) {
+				$prioritize-=20;
 			}
 		}
 		if (/^Maintainer: (.*)/) { # new item
