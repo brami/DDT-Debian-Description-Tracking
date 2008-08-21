@@ -4,6 +4,7 @@ cd ~ddtp
 
 ./Packages2packages_tb.sh
 ./Packages2db.sh
+./completeTranslations.sh
 ./db2web.sh
 # ./db2Translation.sh
 ./file2Translation.sh
