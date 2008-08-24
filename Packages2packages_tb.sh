@@ -44,6 +44,7 @@ do
 			[ -f $file ] || echo no $file
 		done
 
+                file="Packages/Packages_${distribution}_${part}.bz2"
 		$DB2FILE > $file
 	done
 done
