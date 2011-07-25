@@ -13,3 +13,5 @@
 	* ddt.cgi: Use the package_version_tb table instead of version_tb
 	table to display the package and version instead of just the
 	version.
+	* db_change_lang.pl: Do not convert pt to pt_BR anymore.
+	* db_change_lang.pl: Convert km to km_KH.

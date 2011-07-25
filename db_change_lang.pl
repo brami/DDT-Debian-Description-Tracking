@@ -18,10 +18,10 @@ die $DBI::errstr unless $dbh;
 
 
 eval {
-	$dbh->do("UPDATE translation_tb SET language='pt' WHERE language='pt_PT';");
-	$dbh->do("UPDATE part_tb SET language='pt' WHERE language='pt_PT';");
-	$dbh->do("UPDATE ppart_tb SET language='pt' WHERE language='pt_PT';");
-	$dbh->do("UPDATE owner_tb SET language='pt' WHERE language='pt_PT';");
+	$dbh->do("UPDATE translation_tb SET language='km' WHERE language='km_KH';");
+	$dbh->do("UPDATE part_tb SET language='km' WHERE language='km_KH';");
+	$dbh->do("UPDATE ppart_tb SET language='km' WHERE language='km_KH';");
+	$dbh->do("UPDATE owner_tb SET language='km' WHERE language='km_KH';");
 	$dbh->commit;   # commit the changes if we get this far
 };
 if ($@) {
