@@ -32,3 +32,9 @@
 	etch.
 	* file2Translation.sh: Remove consecutive duplicate lines from the
 	./file2Translation.pl output (maybe to remove extra empty lines?).
+	* file2Translation.pl (get_packageinfos): Only return the md5 and
+	not the package.
+	* file2Translation.pl: get_description_ids and foreach (package,
+	version) loop replaced by make_translation_file(). Use the
+	package_version_tb table to pick description for a package and
+	version. + other changes

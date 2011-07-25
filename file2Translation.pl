@@ -6,9 +6,6 @@ use strict;
 my $dists= shift(@ARGV);
 my $lang= shift(@ARGV); 
 
-my $description_id;
-my $translation;
-
 use DBI;
 use Digest::MD5 qw(md5_hex);
 
@@ -24,31 +21,6 @@ die $DBI::errstr unless $dbh;
 
 
 my $package;
-my $description_md5;
-
-sub get_description_ids {
-	my $tag= shift(@_);
-
-	my @description_ids;
-	my $package;
-	my $version;
-
-	open (PACKAGELIST, "<Packages/packagelist-$tag");
-	while (<PACKAGELIST>) {
-		chomp;
-		($package,$version) = split (/ /);
-		#print "^$package^$version^";
-		my $sth = $dbh->prepare("SELECT description_id FROM description_tb WHERE package=? and description_id in (SELECT description_id FROM version_tb WHERE version=?)");
-		$sth->execute($package,$version);
-		while(($description_id) = $sth->fetchrow_array) {
-			#print "  -> $description_id\n";
-			push @description_ids,$description_id;
-		}
-	}
-	close (PACKAGELIST);
-
-	return @description_ids;
-}
 
 sub get_translation {
 	my $description_id= shift(@_);
@@ -68,22 +40,52 @@ sub get_translation {
 sub get_packageinfos {
 	my $description_id= shift(@_);
 
-	my $package;
 	my $description_md5;
 
-	my $sth = $dbh->prepare("SELECT package,description_md5 FROM description_tb WHERE description_id=?");
+	my $sth = $dbh->prepare("SELECT description_md5 FROM description_tb WHERE description_id=?");
 	$sth->execute($description_id);
-	($package,$description_md5) = $sth->fetchrow_array;
-	return ($package,$description_md5);
+	($description_md5) = $sth->fetchrow_array;
+	return ($description_md5);
 }
 
-foreach (get_description_ids($dists)) {
-	$description_id=$_;
-	$translation=get_translation($description_id,$lang);
-	if ($translation) {
-		($package,$description_md5)=get_packageinfos($description_id);
-		print "Package: $package\n";
-		print "Description-md5: $description_md5\n";
-		print "Description-$lang: $translation\n";
+sub make_translation_file {
+	my $tag= shift(@_);
+
+	my %seen_package_and_description_ids;
+	my $package;
+	my $version;
+	my $translation;
+	my $description_md5;
+	my $description_id;
+
+	open (PACKAGELIST, "<Packages/packagelist-$tag");
+	while (<PACKAGELIST>) {
+		chomp;
+		($package,$version) = split (/ /);
+		#print "^$package^$version^";
+		my $sth = $dbh->prepare("SELECT description_id FROM description_tb WHERE description_id in (SELECT description_id FROM package_version_tb WHERE package=? and version=?)");
+		$sth->execute($package,$version);
+		while(($description_id) = $sth->fetchrow_array) {
+			#print "  -> $description_id\n";
+			unless ($seen_package_and_description_ids{"$package $description_id"}) {
+				$translation=get_translation($description_id,$lang);
+				if ($translation) {
+					($description_md5)=get_packageinfos($description_id);
+					print "Package: $package\n";
+					print "Description-md5: $description_md5\n";
+					print "Description-$lang: $translation\n";
+				}
+				$seen_package_and_description_ids{"$package $description_id"}=1;
+			}
+		}
 	}
+	close (PACKAGELIST);
+
+	# # get only the uniq elements (see man perlfaq5)
+	# my %hash   = map { $_, 1 } @description_ids;
+	# my @unique = keys %hash;
+ 
+	# return @unique;
 }
+
+make_translation_file($dists);
