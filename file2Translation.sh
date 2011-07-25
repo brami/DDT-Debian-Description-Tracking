@@ -5,14 +5,17 @@ cd ~ddtp
 # Fetch active langs from database
 LANGS=`psql ddtp -q -A -t -c "select distinct language from translation_tb"`
 
-DISTS="lenny sid"
+#DISTS="lenny sid"
+#DISTS="squeeze sid"
+DISTS="wheezy sid"
 
 mkdir -p packagelist
 cd packagelist
-for distribution in $DISTS etch md5sum timestamp timestamp.gpg
+for distribution in $DISTS squeeze md5sum timestamp timestamp.gpg
 do
 	rm -f $distribution
-	wget -q -m -nd http://ftp-master.debian.org/i18n/$distribution
+	wget -q -m -nd http://ftp-master.debian.org/i18n/$distribution || \
+		echo "failed to wget http://ftp-master.debian.org/i18n/$distribution"
 done
 md5sum --check md5sum
 cd ..
@@ -25,7 +28,7 @@ do
 	for lang in $LANGS
 	do
 		mkdir -p Translation-files_new/dists/$distribution/main/i18n/ 
-		./file2Translation.pl $distribution $lang > Translation-files_new/dists/$distribution/main/i18n/Translation-$lang
+		./file2Translation.pl $distribution $lang | uniq > Translation-files_new/dists/$distribution/main/i18n/Translation-$lang
 		echo `date`: create the $distribution/Translation-$lang
 	done
 	cp packagelist/timestamp packagelist/timestamp.gpg Translation-files_new/

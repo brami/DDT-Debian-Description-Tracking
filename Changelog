@@ -17,7 +17,7 @@
 	* db_change_lang.pl: Convert km to km_KH.
 	* Translation2db.sh: For some reasons, this script, which do not
 	seem to be used, was changed to remove consecutive duplicate lines
-	(maybe to remove extra empty lines?.
+	(maybe to remove extra empty lines?).
 	* update.sh: Compute the statistics for wheezy and squeeze instead
 	of lenny and etch
 	* update0.5.sh: Likewise.
@@ -25,3 +25,10 @@
 	that the list of descriptions which are checked for being already
 	completed is extended without regard of any existing translations
 	for their package.
+	* file2Translation.sh: Process wheezy instead of lenny (in
+	addition to sid)
+	* file2Translation.sh: To check the validity of ftp-master files,
+	download the list of packages and versions for squeeze instead of
+	etch.
+	* file2Translation.sh: Remove consecutive duplicate lines from the
+	./file2Translation.pl output (maybe to remove extra empty lines?).
