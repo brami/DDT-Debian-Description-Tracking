@@ -20,3 +20,4 @@
 	(maybe to remove extra empty lines?.
 	* update.sh: Compute the statistics for wheezy and squeeze instead
 	of lenny and etch
+	* update0.5.sh: Likewise.

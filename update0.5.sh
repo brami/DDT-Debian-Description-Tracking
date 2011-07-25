@@ -10,8 +10,8 @@ cd ~ddtp
 
 # Regenerate the stats files
 /home/kleptog/stats/ddts-stats sid >/dev/null
-/home/kleptog/stats/ddts-stats lenny >/dev/null
-/home/kleptog/stats/ddts-stats etch >/dev/null
+/home/kleptog/stats/ddts-stats wheezy >/dev/null
+/home/kleptog/stats/ddts-stats squeeze >/dev/null
 
 #cp -a /home/grisu/public_html/ddtp/* /var/www/ddtp/
 
