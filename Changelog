@@ -38,3 +38,9 @@
 	version) loop replaced by make_translation_file(). Use the
 	package_version_tb table to pick description for a package and
 	version. + other changes
+	* Packages2packages_tb.sh: Updated list of architectures. Removed
+	alpha, arm, hppa, hurd-i386, m68k. Added kfreebsd-i386,
+	kfreebsd-amd64.
+	* Packages2packages_tb.sh: Updated list of distributions: sarge
+	etch lenny changed to squeeze wheezy (i.e. oldstable dropped)
+	* Packages2packages_tb.sh: Report failure to wget.
