@@ -1,5 +1,5 @@
 2011-07-25  Nicolas Francois  <nicolas.francois@centraliens.net>
-	
+
 	Introduce changes already applied to the DDTP server
 	* db2web.sh: Add link to the Squeeze and Wheezy statistics.
 	* db2web.sh: Changed y axes (no more logscale and limits changed
@@ -44,3 +44,5 @@
 	* Packages2packages_tb.sh: Updated list of distributions: sarge
 	etch lenny changed to squeeze wheezy (i.e. oldstable dropped)
 	* Packages2packages_tb.sh: Report failure to wget.
+	* logrotate.config: comment out the compress options (this is the
+	default).
