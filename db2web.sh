@@ -21,7 +21,7 @@ done
 
 echo "<hr>" >> www/index.html.new
 echo "<a href=\"http://ddtp.debian.net/ddtss/index.cgi/\">to the ddtss (a web interface for the ddtp)<a/><br>" >> www/index.html.new
-echo "Daily description translation stats for <a href='stats/stats-etch.html'>Etch</a>, <a href='stats/stats-lenny.html'>Lenny</a> and <a href='stats/stats-sid.html'>Sid</a>" >> www/index.html.new
+echo "Daily description translation stats for <a href='stats/stats-etch.html'>Etch</a>, <a href='stats/stats-lenny.html'>Lenny</a> , <a href='stats/stats-squeeze.html'>Squeeze</a>, <a href='stats/stats-wheezy.html'>Wheezy</a>  and <a href='stats/stats-sid.html'>Sid</a>" >> www/index.html.new
 echo "<hr>" >> www/index.html.new
 echo "<a href=\"http://www.debian.org/international/l10n/ddtp\">Documentation about DDTP and DDTSS<a/>" >> www/index.html.new
 echo "<hr>" >> www/index.html.new
@@ -33,11 +33,13 @@ echo "<hr>" >> www/index.html.new
 echo "set terminal png small" > lib/all-stat.gnuplot
 echo "set xdata time" >> lib/all-stat.gnuplot
 echo "set format x \"%d.%m\\n%Y\"" >> lib/all-stat.gnuplot
+#echo "set logscale y" >> lib/all-stat.gnuplot
 echo "set output \"../gnuplot/ddts-stat.png\"" >> lib/all-stat.gnuplot
-echo "plot [ ] [0:15000] \\" >> lib/all-stat.gnuplot
+echo "plot [ ] [1:27000] \\" >> lib/all-stat.gnuplot
 
 echo "set terminal png small" > lib/sid-stat.gnuplot
 echo "set xdata time" >> lib/sid-stat.gnuplot
+#echo "set logscale y" >> lib/sid-stat.gnuplot
 echo "set format x \"%d.%m\\n%Y\"" >> lib/sid-stat.gnuplot
 
 LANGS=`psql ddtp -q -A -t -c "select distinct language from translation_tb"`
