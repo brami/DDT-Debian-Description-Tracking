@@ -10,3 +10,6 @@
 	* sql_layout.txt: Add table suggestion_tb.
 	* Packages2db.sh: Comment out gaia, lenny and etch
 	* Packages2db.sh: Added Squeeze and Wheezy
+	* ddt.cgi: Use the package_version_tb table instead of version_tb
+	table to display the package and version instead of just the
+	version.

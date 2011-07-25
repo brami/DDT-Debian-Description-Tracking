@@ -97,12 +97,13 @@ sub get_versions ($) {
 
 	my @versions=();
 
-	my $sth = $dbh->prepare("SELECT version FROM version_tb WHERE description_id=?");
+	my $sth = $dbh->prepare("SELECT package,version FROM package_version_tb WHERE description_id=?");
 	$sth->execute($desc_id);
 
+	my $package;
 	my $version;
-	while(($version) = $sth->fetchrow_array) {
-		push @versions,$version;
+	while(($package,$version) = $sth->fetchrow_array) {
+		push @versions,"$package ($version)";
 	}
 	return (@versions);
 }
