@@ -18,3 +18,5 @@
 	* Translation2db.sh: For some reasons, this script, which do not
 	seem to be used, was changed to remove consecutive duplicate lines
 	(maybe to remove extra empty lines?.
+	* update.sh: Compute the statistics for wheezy and squeeze instead
+	of lenny and etch
