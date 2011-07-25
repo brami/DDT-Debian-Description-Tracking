@@ -1,5 +1,10 @@
 2011-07-25  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* file2Translation.pl: Remove dead code. md5_hex not used.
+	$package duplicated. And commented test code removed.
+
+2011-07-25  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* Packages2packages_tb.pl: Packages2packages_tb.pl loads
 	descriptions into a psql table. This table is used by
 	packages_tb2Packages.pl to produce a Packages file with all the
