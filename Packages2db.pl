@@ -112,10 +112,27 @@ sub scan_packages_file {
 	sub save_version_to_db {
 		my $description_id= shift(@_);
 		my $version= shift(@_);
+		my $package= shift(@_);
 		
+		my $package_version_id;
+
+		my $sth = $dbh->prepare("SELECT package_version_id FROM package_version_tb WHERE description_id=? and package=? and version=?");
+		$sth->execute($description_id, $package, $version);
+		($package_version_id) = $sth->fetchrow_array;
+
+		if (not $package_version_id) {
+			eval {
+				$dbh->do("INSERT INTO package_version_tb (description_id,package,version) VALUES (?,?,?);", undef, $description_id, $package, $version);
+				$dbh->commit;   # commit the changes if we get this far
+			};
+			if ($@) {
+				$dbh->rollback; # undo the incomplete changes
+			}
+		}
+
 		my $version_id;
 
-		my $sth = $dbh->prepare("SELECT version_id FROM version_tb WHERE description_id=? and version=?");
+		$sth = $dbh->prepare("SELECT version_id FROM version_tb WHERE description_id=? and version=?");
 		$sth->execute($description_id, $version);
 		($version_id) = $sth->fetchrow_array;
 
@@ -179,7 +196,7 @@ sub scan_packages_file {
 				$dbh->rollback; # undo the incomplete changes
 			}
 			if (($description_id)) {
-				save_version_to_db($description_id,$version);
+				save_version_to_db($description_id,$version,$package);
 			}
 			if (($description_id) and ($distribution eq 'sid')) {
 				save_active_to_db($description_id);

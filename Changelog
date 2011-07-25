@@ -4,3 +4,7 @@
 	* db2web.sh: Add link to the Squeeze and Wheezy statistics.
 	* db2web.sh: Changed y axes (no more logscale and limits changed
 	from 0:15000 to 1:27000).
+	* sql_layout.txt: Add table package_version_tb.
+	* Packages2db.pl: Populate the package_version_tb table in
+	addition to version_tb.
+	* sql_layout.txt: Add table suggestion_tb.

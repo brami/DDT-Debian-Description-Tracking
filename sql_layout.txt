@@ -1,6 +1,9 @@
 
+DROP TABLE suggestion_tb;
+
 DROP TABLE packages_tb;
 
+DROP TABLE package_version_tb;
 DROP TABLE version_tb;
 
 DROP TABLE owner_tb;
@@ -107,6 +110,18 @@ CREATE TABLE version_tb
 CREATE INDEX version_tb_1_IDX ON version_tb (description_id);
 CREATE UNIQUE INDEX version_tb_3_IDX ON version_tb (description_id,version);
 
+CREATE TABLE package_version_tb
+(
+  package_version_id serial PRIMARY KEY ,
+  package text NOT NULL,
+  version text NOT NULL,
+  description_id integer NOT NULL REFERENCES description_tb
+);
+CREATE INDEX package_version_tb_1_IDX ON package_version_tb (description_id);
+CREATE INDEX package_version_tb_2_IDX ON package_version_tb (package);
+CREATE UNIQUE INDEX package_version_tb_3_IDX ON package_version_tb (description_id,package,version);
+CREATE INDEX package_version_tb_4_IDX ON package_version_tb (package,version);
+
 CREATE TABLE packages_tb
 (
   packages_id serial PRIMARY KEY ,
@@ -123,3 +138,17 @@ CREATE TABLE packages_tb
 );
 CREATE INDEX package_tb_1_IDX ON packages_tb (package);
 CREATE UNIQUE INDEX package_tb_3_IDX ON packages_tb (package,version);
+
+CREATE TABLE suggestion_tb
+(
+  suggestion_id serial PRIMARY KEY ,
+  package text NOT NULL,
+  version text NOT NULL,
+  description_md5 text NOT NULL,
+  translation text NOT NULL,
+  language text NOT NULL,
+  importer text NOT NULL,
+  importtime date NOT NULL
+);
+CREATE INDEX suggestion_tb_1_IDX ON suggestion_tb (package);
+CREATE INDEX suggestion_tb_2_IDX ON suggestion_tb (package,language,description_md5);
