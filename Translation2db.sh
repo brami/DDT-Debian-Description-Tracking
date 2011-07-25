@@ -15,7 +15,7 @@ do
 		./Translation2db.pl Translations_$distribution/Translation-$lang $lang
 		echo `date`: write Translations_$distribution/Translation-$lang from db
 		mkdir -p $ARCHIV/dists/$distribution/main/i18n/
-		cp Translations_$distribution/Translation-$lang $ARCHIV/dists/$distribution/main/i18n/
+		uniq < Translations_$distribution/Translation-$lang > $ARCHIV/dists/$distribution/main/i18n/Translation-$lang
 		gzip < $ARCHIV/dists/$distribution/main/i18n/Translation-$lang > $ARCHIV/dists/$distribution/main/i18n/Translation-$lang.gz
 		bzip2 < $ARCHIV/dists/$distribution/main/i18n/Translation-$lang > $ARCHIV/dists/$distribution/main/i18n/Translation-$lang.bz2
 		echo `date`: create Translation-$lang gz/bz2 files

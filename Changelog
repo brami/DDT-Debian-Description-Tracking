@@ -15,3 +15,6 @@
 	version.
 	* db_change_lang.pl: Do not convert pt to pt_BR anymore.
 	* db_change_lang.pl: Convert km to km_KH.
+	* Translation2db.sh: For some reasons, this script, which do not
+	seem to be used, was changed to remove consecutive duplicate lines
+	(maybe to remove extra empty lines?.
