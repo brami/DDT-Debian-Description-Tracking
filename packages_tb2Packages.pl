@@ -1,8 +1,5 @@
 #!/usr/bin/perl -w
 use strict;
-use LWP::Simple;
-use POSIX qw(strftime);
-use Digest::MD5 qw(md5_hex);
 use DBI;
 my @DSN = ("DBI:Pg:dbname=ddtp", "", "");
 
@@ -18,12 +15,6 @@ my $data = "/org/ddtp.debian.net/Packages/";
 
 my $DIST = shift || "etch";
 my $SECTION = shift || "main";
-
-my %descrmd5;        # $descrmd5{$md5} = $desc_id, represents all known descriptions
-my %descrlist;       # $descrlist{$package}{$md5} exists for each package in package file
-                     # $descrlist{$package}{priority} = package priority
-my %total_counts;    # $total_counts{$priority} = number of packages with that priority
-my %important_packages;  # $important_packages{$package}{$md5} exists for packages+description of priority standard or higher
 
 export_packages();      # Read packages file
 exit;
@@ -61,34 +52,4 @@ sub open_stdout
   
   return $fh;
 }
-
-sub parse_header_format
-{
-  my $fh = shift;
-  my $sub = shift;
-
-  my $lastfield = undef;
-  my %hash;
-  while(<$fh>)
-  {
-    chomp;
-    if( /^([\w.-]+): (.*)/ )
-    {
-      $lastfield = $1;
-      $hash{$1} = $2;
-    }
-    elsif( /^( .*)/ )
-    {
-      $hash{$lastfield} .= "\n$_";
-    }
-    elsif( /^$/ )
-    {
-      $sub->( \%hash );
-      %hash = ();
-      $lastfield = undef;
-    }
-  }
-}
-
-
 

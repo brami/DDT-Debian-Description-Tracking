@@ -1,8 +1,5 @@
 #!/usr/bin/perl -w
 use strict;
-use LWP::Simple;
-use POSIX qw(strftime);
-use Digest::MD5 qw(md5_hex);
 use DBI;
 my @DSN = ("DBI:Pg:dbname=ddtp", "", "");
 
@@ -15,12 +12,6 @@ my $dbh = DBI->connect(@DSN,
 die $DBI::errstr unless $dbh;
 
 my $data = "/org/ddtp.debian.net/Packages/";
-
-my %descrmd5;        # $descrmd5{$md5} = $desc_id, represents all known descriptions
-my %descrlist;       # $descrlist{$package}{$md5} exists for each package in package file
-                     # $descrlist{$package}{priority} = package priority
-my %total_counts;    # $total_counts{$priority} = number of packages with that priority
-my %important_packages;  # $important_packages{$package}{$md5} exists for packages+description of priority standard or higher
 
 load_packages();      # Read packages file
 exit;
@@ -41,15 +32,13 @@ sub load_packages
 sub process_package
 {
   my $hash = shift;
-  my $md5 = md5_hex( $hash->{Description}."\n" );
-#  print "$hash->{Package} : $md5\n";
   if (not $hash->{Source}) {
     $hash->{Source} = $hash->{Package};
   }
 
   eval {
-    $dbh->do("INSERT INTO packages_tb (package,source,version,tag,priority,maintainer,task,section,description,description_md5) 
-                          VALUES (?,?,?,?,?,?,?,?,?,?);", undef, 
+    $dbh->do("INSERT INTO packages_tb (package,source,version,tag,priority,maintainer,task,section,description) 
+                          VALUES (?,?,?,?,?,?,?,?,?);", undef, 
                           $hash->{Package},
 			  $hash->{Source},
 			  $hash->{Version},
@@ -58,8 +47,7 @@ sub process_package
 			  $hash->{Maintainer},
 			  $hash->{Task},
 			  $hash->{Section},
-			  $hash->{Description},
-			  $md5
+			  $hash->{Description}
 			  );
     $dbh->commit;   # commit the changes if we get this far
   };
@@ -104,6 +92,4 @@ sub parse_header_format
     }
   }
 }
-
-
 

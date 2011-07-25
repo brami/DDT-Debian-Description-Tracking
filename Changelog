@@ -1,5 +1,27 @@
 2011-07-25  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* Packages2packages_tb.pl: Packages2packages_tb.pl loads
+	descriptions into a psql table. This table is used by
+	packages_tb2Packages.pl to produce a Packages file with all the
+	packages independently from an architecture. Since
+	packages_tb2Packages.pl does not dump the md5 into this Packages
+	file, there is no need to load the md5 from
+	Packages2packages_tb.pl (and no need to compute these md5).
+	Note: The SQL layout should be adjusted, but I have some secret
+	goal to get rid of the complete table anyway.
+
+2011-07-25  Nicolas Francois  <nicolas.francois@centraliens.net>
+
+	* packages_tb2Packages.pl: Remove dead code. parse_header_format
+	inherited from Packages2packages_tb.pl. Hashes %descrmd5,
+	%descrlist, %total_counts, %important_packages not used. We do not
+	need LWP::Simple, strftime, md5_hex.
+	* Packages2packages_tb.pl: Remove dead code. Hashes %descrmd5,
+	%descrlist, %total_counts, %important_packages not used.  We do
+	not need LWP::Simple, strftime
+
+2011-07-25  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	Introduce changes already applied to the DDTP server
 	* db2web.sh: Add link to the Squeeze and Wheezy statistics.
 	* db2web.sh: Changed y axes (no more logscale and limits changed
