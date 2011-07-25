@@ -23,8 +23,9 @@ sub export_packages
 {
   my ($package,$source,$version,$tag,$priority,$maintainer,$task,$section,$description);
 
-  print STDERR " Export package file \n";
-  my $fh = open_stdout( );
+  print " Export package file \n";
+  my $fh;
+  open $fh, "| bzip2 " or die "Couldn't pipe to bzip2 ($!)\n";
 
   my $sth = $dbh->prepare("SELECT package,source,version,tag,priority,maintainer,task,section,description FROM packages_tb ORDER BY package");
   $sth->execute;
@@ -41,15 +42,5 @@ sub export_packages
     print $fh "\n";
   }
   close $fh;
-}
-
-# Helper for load_packages
-sub open_stdout
-{
-  my $fh;
- 
-  open $fh, "| bzip2 " or die "Couldn't open stdout ($!)\n";
-  
-  return $fh;
 }
 

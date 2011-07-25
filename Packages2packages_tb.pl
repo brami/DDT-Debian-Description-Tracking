@@ -18,14 +18,14 @@ exit;
 
 sub load_packages
 {
-  print STDERR " Loading package file ";
+  print " Loading package file ";
   my $fh = open_stdin( );
   parse_header_format( $fh, \&process_package );
   close $fh;
   my $sth = $dbh->prepare("SELECT count(packages_id) FROM packages_tb");
   $sth->execute;
   my ($counter) = $sth->fetchrow_array;
-  print STDERR "  -> $counter packages in packages_tb\n";
+  print "  -> $counter packages in packages_tb\n";
 }
 
 # Helper for load_packages

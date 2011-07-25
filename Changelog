@@ -1,5 +1,13 @@
 2011-07-25  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* Packages2packages_tb.sh: Redirect errors to stderr.
+	* Packages2packages_tb.pl: Redirect messages to stdout.
+	* packages_tb2Packages.pl: Redirect messages to stdout.
+	* packages_tb2Packages.pl: Remove open_stdout(). open is just one
+	line.
+
+2011-07-25  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* file2Translation.pl: Remove dead code. md5_hex not used.
 	$package duplicated. And commented test code removed.
 
