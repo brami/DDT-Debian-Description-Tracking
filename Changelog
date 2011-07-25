@@ -21,3 +21,7 @@
 	* update.sh: Compute the statistics for wheezy and squeeze instead
 	of lenny and etch
 	* update0.5.sh: Likewise.
+	* completeTranslations.pl: It seems the intent of the change is
+	that the list of descriptions which are checked for being already
+	completed is extended without regard of any existing translations
+	for their package.

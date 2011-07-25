@@ -51,9 +51,11 @@ sub desc_to_parts ($) {
 sub get_descrition_ids {
 	my $lang=shift ;
 
-	my $sth = $dbh->prepare("SELECT description,description_id FROM description_tb WHERE description_id in (SELECT description_id FROM active_tb) and description_id not in (SELECT description_id FROM translation_tb WHERE description_id in (SELECT description_id FROM active_tb) and language=?) and package in (SELECT package FROM description_tb WHERE description_id in (SELECT description_id FROM translation_tb WHERE language=?) GROUP BY package)");
+	#my $sth = $dbh->prepare("SELECT description,description_id FROM description_tb WHERE description_id in (SELECT description_id FROM active_tb) and description_id not in (SELECT description_id FROM translation_tb WHERE description_id in (SELECT description_id FROM active_tb) and language=?) and package in (SELECT package FROM description_tb WHERE description_id in (SELECT description_id FROM translation_tb WHERE language=?) GROUP BY package)");
+	my $sth = $dbh->prepare("SELECT description,description_id FROM description_tb WHERE description_id in (SELECT description_id FROM active_tb) and description_id not in (SELECT description_id FROM translation_tb WHERE description_id in (SELECT description_id FROM active_tb) and language=?)");
 
-	$sth->execute($lang,$lang);
+	#$sth->execute($lang,$lang);
+	$sth->execute($lang);
 	while (my ($description,$d_id) = $sth->fetchrow_array) {
 		#print "check translation id=$d_id,$lang\n";
 		$count++;
