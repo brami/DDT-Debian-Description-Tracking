@@ -5,23 +5,63 @@ INPORT2DB="../Packages2db.pl"
 cd ~ddtp/Packages
 
 
-distribution="gaia"
-	file="Packages-lliurex_${distribution}"
 
-	echo `date`: lliurex_${distribution}
-
-	bunzip2 -k -f $file.bz2
-	echo `date`: Packages bunzip2
-
-	$INPORT2DB $file lliurex_$distribution
-	echo `date`: data in db
-
-	rm -f $file
+#distribution="gaia"
+#	file="Packages-lliurex_${distribution}"
+#
+#	echo `date`: lliurex_${distribution}
+#
+#	bunzip2 -k -f $file.bz2
+#	echo `date`: Packages bunzip2
+#
+#	$INPORT2DB $file lliurex_$distribution
+#	echo `date`: data in db
+#
+#	rm -f $file
 
 
 PART="main contrib"
 
-distribution="etch"
+#distribution="etch"
+#for part in $PART
+#do
+#		file="Packages_${distribution}_${part}"
+#
+#		echo `date`: ${distribution}/${part}
+#
+#		bunzip2 -k -f $file.bz2
+#		echo `date`: Packages bunzip2
+#
+#		$INPORT2DB $file $distribution
+#		echo `date`: data in db
+#
+#		rm -f $file
+#done
+# Regular vacuum to cut disk usage
+#psql ddtp -c "VACUUM"
+
+
+#distribution="lenny"
+#for part in $PART
+#do
+#		file="Packages_${distribution}_${part}"
+#
+#		echo `date`: ${distribution}/${part}
+#
+#		bunzip2 -k -f $file.bz2
+#		echo `date`: Packages bunzip2
+#
+#		$INPORT2DB $file $distribution
+#		echo `date`: data in db
+#
+#		rm -f $file
+#done
+# Regular vacuum to cut disk usage
+#psql ddtp -c "VACUUM"
+
+
+
+distribution="squeeze"
 for part in $PART
 do
 		file="Packages_${distribution}_${part}"
@@ -36,11 +76,7 @@ do
 
 		rm -f $file
 done
-# Regular vacuum to cut disk usage
-psql ddtp -c "VACUUM"
-
-
-distribution="lenny"
+distribution="wheezy"
 for part in $PART
 do
 		file="Packages_${distribution}_${part}"

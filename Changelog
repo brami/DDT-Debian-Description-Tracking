@@ -8,3 +8,5 @@
 	* Packages2db.pl: Populate the package_version_tb table in
 	addition to version_tb.
 	* sql_layout.txt: Add table suggestion_tb.
+	* Packages2db.sh: Comment out gaia, lenny and etch
+	* Packages2db.sh: Added Squeeze and Wheezy
