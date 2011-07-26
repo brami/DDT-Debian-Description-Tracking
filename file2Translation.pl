@@ -3,6 +3,14 @@
 use diagnostics;
 use strict;
 
+# If --with-version is provided as first argument, add a Version field in
+# the Translation file.
+my $WITH_VERSION = 0;
+if ($ARGV[0] eq "--with-version") {
+	shift @ARGV;
+	$WITH_VERSION = 1;
+}
+
 my $dists= shift(@ARGV);
 my $lang= shift(@ARGV); 
 
@@ -69,6 +77,7 @@ sub make_translation_file {
 				if ($translation) {
 					($description_md5)=get_packageinfos($description_id);
 					print "Package: $package\n";
+					print "Version: $version\n" if $WITH_VERSION;
 					print "Description-md5: $description_md5\n";
 					print "Description-$lang: $translation\n";
 				}

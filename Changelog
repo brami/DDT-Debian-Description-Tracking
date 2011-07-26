@@ -1,5 +1,13 @@
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* file2Translation.pl: Add option --with-version to indicate the
+	package version in the Translation file.
+	* file2Translation_udd.sh: use file2Translation.pl --with-version
+	instead of file2Translation_udd.pl.
+	* file2Translation_udd.pl: Removed.
+
+2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* file2Translation_udd.sh: Added missing script.
 
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>

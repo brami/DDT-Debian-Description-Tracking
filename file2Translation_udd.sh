@@ -16,7 +16,7 @@ do
 	for lang in $LANGS
 	do
 		mkdir -p Translation_udd/dists/$distribution/main/i18n/ 
-		./file2Translation_udd.pl $distribution $lang | uniq | gzip > Translation_udd/dists/$distribution/main/i18n/Translation-$lang.gz
+		./file2Translation.pl --with-version $distribution $lang | uniq | gzip > Translation_udd/dists/$distribution/main/i18n/Translation-$lang.gz
 		echo `date`: create the $distribution/Translation-$lang
 	done
 	cp packagelist/timestamp packagelist/timestamp.gpg Translation_udd/
