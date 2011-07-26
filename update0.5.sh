@@ -7,6 +7,7 @@ cd ~ddtp
 ./db2web.sh
 # ./db2Translation.sh
 ./file2Translation.sh
+./file2Translation_udd.sh
 
 # Regenerate the stats files
 /home/kleptog/stats/ddts-stats sid >/dev/null

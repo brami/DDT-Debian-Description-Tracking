@@ -1,5 +1,11 @@
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* file2Translation_udd.pl: Added as it is currently on churro.
+	* update0.5.sh: The UDD Tranlation files are updated here in
+	churro.
+
+2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* Packages2packages_tb.sh: Fix typo. Download of Packages from
 	mirror was broken.
 
