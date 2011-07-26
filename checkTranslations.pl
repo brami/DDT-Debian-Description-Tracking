@@ -31,7 +31,7 @@ sub del_short_translation {
 		#print "check translation id=$d_id,$lang\n";
 		if ($translation and (( $translation =~ tr/\n/\n/ )<2)) {
 			undef $translation;
-			print "translation ist short id=$d_id,$lang\n";
+			print "translation is short id=$d_id,$lang\n";
 			$dbh->do("DELETE FROM translation_tb WHERE language='$lang' and description_id='$d_id';");
 			$dbh->commit;
 		}

@@ -1,5 +1,9 @@
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* checkTranslations.pl: Fix German typo.
+
+2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* update.sh, update0.5.sh: Put logs to
 	LOGDIR=/srv/ddtp.debian.net/cronlog. Only display stderr messages
 	in the cron mails.
