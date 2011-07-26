@@ -1,5 +1,9 @@
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* file2Translation_udd.sh: Added missing script.
+
+2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* file2Translation_udd.pl: Same cleanup as file2Translation.pl.
 
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
