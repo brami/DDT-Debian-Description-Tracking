@@ -7,7 +7,6 @@ my $dists= shift(@ARGV);
 my $lang= shift(@ARGV); 
 
 use DBI;
-use Digest::MD5 qw(md5_hex);
 
 my @DSN = ("DBI:Pg:dbname=ddtp", "", "");
 
@@ -19,8 +18,6 @@ my $dbh = DBI->connect(@DSN,
 
 die $DBI::errstr unless $dbh;
 
-
-my $package;
 
 sub get_translation {
 	my $description_id= shift(@_);
@@ -81,12 +78,6 @@ sub make_translation_file {
 		}
 	}
 	close (PACKAGELIST);
-
-	# # get only the uniq elements (see man perlfaq5)
-	# my %hash   = map { $_, 1 } @description_ids;
-	# my @unique = keys %hash;
- 
-	# return @unique;
 }
 
 make_translation_file($dists);

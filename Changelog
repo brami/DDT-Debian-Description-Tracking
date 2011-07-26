@@ -1,5 +1,9 @@
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* file2Translation_udd.pl: Same cleanup as file2Translation.pl.
+
+2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* file2Translation.sh: Run md5sum --check with the --quiet option.
 
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
