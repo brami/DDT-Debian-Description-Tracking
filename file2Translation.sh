@@ -17,7 +17,7 @@ do
 	wget -q -m -nd http://ftp-master.debian.org/i18n/$distribution || \
 		echo "failed to wget http://ftp-master.debian.org/i18n/$distribution"
 done
-md5sum --check md5sum
+md5sum --check --quiet md5sum
 cd ..
 
 rm -rf Translation-files_new

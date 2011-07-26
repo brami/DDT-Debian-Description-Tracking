@@ -1,5 +1,9 @@
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* file2Translation.sh: Run md5sum --check with the --quiet option.
+
+2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* checkTranslations.pl: Fix German typo.
 
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
