@@ -1,3 +1,8 @@
+2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
+
+	* Packages2packages_tb.sh: Fix typo. Download of Packages from
+	mirror was broken.
+
 2011-07-25  Nicolas Francois  <nicolas.francois@centraliens.net>
 
 	* Packages2db.sh: Added function load_distribution() to

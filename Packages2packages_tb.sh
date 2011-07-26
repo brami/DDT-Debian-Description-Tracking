@@ -19,7 +19,7 @@ do
 
 			echo `date`: ${distribution}/${part}/$arch
 			[ -s $file.bz2 ] && mv $file.bz2 Packages/Packages.bz2
-			wget -P Packages -q -m -nd http://ftp.de.debian.org/debian/dists/${distribution}/${part}/binary-$arch/Packages.bz2 || echo `date`: "Failed to download ${distribution}/${part}/$arch" 2>
+			wget -P Packages -q -m -nd http://ftp.de.debian.org/debian/dists/${distribution}/${part}/binary-$arch/Packages.bz2 || echo `date`: "Failed to download ${distribution}/${part}/$arch" 1>&2
 			[ -s Packages/Packages.bz2 ] && mv Packages/Packages.bz2 $file.bz2
 			echo `date`: Packages file downloaded
 		done
