@@ -1,5 +1,11 @@
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* update.sh, update0.5.sh: Put logs to
+	LOGDIR=/srv/ddtp.debian.net/cronlog. Only display stderr messages
+	in the cron mails.
+
+2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* file2Translation_udd.pl: Added as it is currently on churro.
 	* update0.5.sh: The UDD Tranlation files are updated here in
 	churro.
