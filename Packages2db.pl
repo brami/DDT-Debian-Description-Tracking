@@ -105,6 +105,7 @@ sub scan_packages_file {
 			$dbh->commit;   # commit the changes if we get this far
 		};
 		if ($@) {
+			warn "Packages2db.pl: failed to INSERT description_id '$description_id' into active_tb: $@\n";
 			$dbh->rollback; # undo the incomplete changes
 		}
 	}
@@ -126,6 +127,7 @@ sub scan_packages_file {
 				$dbh->commit;   # commit the changes if we get this far
 			};
 			if ($@) {
+				warn "Packages2db.pl: failed to INSERT Package '$package', Version '$version' into package_version_tb: $@\n";
 				$dbh->rollback; # undo the incomplete changes
 			}
 		}
@@ -142,6 +144,7 @@ sub scan_packages_file {
 				$dbh->commit;   # commit the changes if we get this far
 			};
 			if ($@) {
+				warn "Packages2db.pl: failed to INSERT description_id '$description_id', version '$version' into version_tb: $@\n";
 				$dbh->rollback; # undo the incomplete changes
 			}
 		}
@@ -156,6 +159,7 @@ sub scan_packages_file {
 			$dbh->commit;   # commit the changes if we get this far
 		};
 		if ($@) {
+			warn "Packages2db.pl: failed to INSERT description_id '$description_id', part_md5 '$part_md5' into part_description_tb:$@\n";
 			$dbh->rollback; # undo the incomplete changes
 		}
 	}
@@ -175,7 +179,7 @@ sub scan_packages_file {
 					}
 					# Track changes in priority. Here we update the details of the description if one of:
 					# - A package with this description comes along with a higher priority (could still be same package)
-					# - The current package has a differnet (possibly lower) priority than before
+					# - The current package has a different (possibly lower) priority than before
 					$dbh->do("UPDATE description_tb SET prioritize = ?, package = ?, source = ? WHERE description_id = ? AND CASE WHEN package = ? THEN prioritize <> ? ELSE prioritize < ? END", undef,
 								$prioritize, $package, $source, $description_id, $package, $prioritize, $prioritize );
 				} else {
@@ -192,7 +196,7 @@ sub scan_packages_file {
 				$dbh->commit;   # commit the changes if we get this far
 			};
 			if ($@) {
-				warn "Transaction aborted because $@";
+				warn "Packages2db.pl: Transaction aborted because $@";
 				$dbh->rollback; # undo the incomplete changes
 			}
 			if (($description_id)) {

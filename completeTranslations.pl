@@ -100,7 +100,7 @@ sub get_descrition_ids {
                                 $dbh->commit;   # commit the changes if we get this far
                         };
                         if ($@) {
-                                warn "Transaction aborted because $@";
+				warn "completeTranslations.pl: failed to INSERT description_id '$d_id', lang '$lang' into translation_tb: $@\n";
                                 $dbh->rollback; # undo the incomplete changes
                         }
 

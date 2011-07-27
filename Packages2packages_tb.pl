@@ -37,8 +37,8 @@ sub process_package
   }
 
   eval {
-    $dbh->do("INSERT INTO packages_tb (package,source,version,tag,priority,maintainer,task,section,description) 
-                          VALUES (?,?,?,?,?,?,?,?,?);", undef, 
+    $dbh->do("INSERT INTO packages_tb (package,source,version,tag,priority,maintainer,task,section,description,description_md5) 
+                          VALUES (?,?,?,?,?,?,?,?,?,?);", undef, 
                           $hash->{Package},
 			  $hash->{Source},
 			  $hash->{Version},
@@ -47,11 +47,13 @@ sub process_package
 			  $hash->{Maintainer},
 			  $hash->{Task},
 			  $hash->{Section},
-			  $hash->{Description}
+			  $hash->{Description},
+			  "0" # This is set as NOT NULL, but should be removed from the sql layout.
 			  );
     $dbh->commit;   # commit the changes if we get this far
   };
   if ($@) {
+    warn "Packages2packages_tb.pl: failed to INSERT Package '".$hash->{Package}."', Version '".$hash->{Version}."': $@\n";
     $dbh->rollback; # undo the incomplete changes
   }
 }

@@ -1,5 +1,16 @@
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* Packages2db.pl: Fix typo in comment 'differnet'
+	* Packages2db.pl: Add warnings when a transaction could not be
+	concluded.
+	* completeTranslations.pl: Likewise.
+	* Packages2packages_tb.pl: Likewise.
+	* Packages2packages_tb.pl: description_md5 is NOT NULL, insert a
+	default "0" value. This will have to be cleaned up later by
+	removing this column.
+
+2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* file2Translation.pl: Add option --with-version to indicate the
 	package version in the Translation file.
 	* file2Translation_udd.sh: use file2Translation.pl --with-version
