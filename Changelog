@@ -1,5 +1,14 @@
 2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* ddts-stats: Cleanup.
+	* ddts-stats: Use /srv instead of /org
+	* ddts-stats: USe warn instead of print STDERR.
+	* ddts-stats: Report progress messages to stdout, errors to
+	stderr.
+	* ddts-stats: Only warn when getting the popcon file fails.
+
+2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* ddts-stats: Added script to update the translation statistics.
 	* update.sh: Use the ddts-stats scripts instead of one from a home
 	directory. And redirect logs / error messages.
