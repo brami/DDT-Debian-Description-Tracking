@@ -1,5 +1,11 @@
 2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* ddts-stats: Added script to update the translation statistics.
+	* update.sh: Use the ddts-stats scripts instead of one from a home
+	directory. And redirect logs / error messages.
+
+2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* Packages2db.pl: is_description_id_active() added.
 	* Packages2db.pl: Do not inject description_id in active_tb when
 	already in active_tb (and do not compute or re-inject their

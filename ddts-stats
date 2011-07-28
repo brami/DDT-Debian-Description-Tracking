@@ -1,0 +1,473 @@
+#!/usr/bin/perl -w
+use strict;
+use LWP::Simple;
+use POSIX qw(strftime);
+use Digest::MD5 qw(md5_hex);
+use DBI;
+my @DSN = ("DBI:Pg:dbname=ddtp", "", "");
+
+my $dbh = DBI->connect(@DSN,
+    { PrintError => 0,
+      RaiseError => 1,
+      AutoCommit => 0,
+    });
+
+die $DBI::errstr unless $dbh;
+
+#my @langs = qw(da de eo es fi fr hu it ja km_KH nl pl pt_BR pt ru sk sv uk zh_CN zh_TW cs ko ca);
+my @langs = map { $_->[0] } @{ $dbh->selectall_arrayref("SELECT DISTINCT language FROM translation_tb") };
+my %longnames = (
+    da => 'Danish',
+    de => 'German',
+    ca => 'Catalan',
+    cs => 'Czech',
+    fr => 'French',
+    hu => 'Hungarian',
+    it => 'Italian',
+    ja => 'Japanese',
+    ko => 'Korean',
+    nl => 'Dutch',
+    pl => 'Polish',
+    pt_BR => 'Brazilian Portuguese',
+    pt => 'Portugese',
+    ru => 'Russian',
+    sk => 'Slovak',
+    sv => 'Swedish',
+    uk => 'Ukrainian',
+    es => 'Spanish',
+    eo => 'Esperanto',
+    fi => 'Finnish',
+    zh_CN => 'Simplified Chinese',
+    zh_TW => 'Traditional Chinese',
+    km_KH => 'Cambodian (Khmer)',
+);
+my $data = "/org/ddtp.debian.net/Packages/";
+
+my $DIST = shift || "etch";
+my $ARCH = "i386";
+my $SECTION = "main";
+
+my $POPCON = "http://popcon.debian.org/by_vote";
+my $OUTPUT = "/org/ddtp.debian.net/www/stats/stats-${DIST}.html";
+
+my $POPCON_COUNT = 500;
+
+my %descrmd5;        # $descrmd5{$md5} = $desc_id, represents all known descriptions
+my %descrlist;       # $descrlist{$package}{$md5} exists for each package in package file
+                     # $descrlist{$package}{priority} = package priority
+my %total_counts;    # $total_counts{$priority} = number of packages with that priority
+my %important_packages;  # $important_packages{$package}{$md5} exists for packages+description of priority standard or higher
+my %desc_id_index;   # $desc_id_index{$desc_id}{md5} = md5 of that description
+                     # $desc_id_index{$desc_id}{translated}{$lang} exists if translated in that lang
+my %missing;         # $missing{$lang}{$priority} = [ array of packages not translated ]
+my %popconN;       # $popcon{$package} = $rank;
+my %popconrank;      # $popconrank{$package} = $vote_in_popcon;
+my $popconrank_total;# total of all votes in popcon
+my %output;
+
+my %scores = ( required => 1.0, important => 0.75, standard => 0.5, optional => 0.25, extra => 0.10, popconN => 0.0, popconrank => 0.0 );
+my @Priorities = qw(required important standard optional extra popconN popconrank);
+my %output_header = ( popconN => "Popcon$POPCON_COUNT", popconrank => "PopconRank" );
+
+#load_desc_index();
+fetch_data();
+load_packages();      # Read packages file
+load_popcon();        # Read popcon data
+parse_ddtp_index();   # Get desc info from website
+count_packages();     # Cross-reference package and count them
+report_translations(); # Generate report
+write_output();
+exit;
+
+sub fetch_data
+{
+  my $code = mirror( $POPCON, "$data/popcon.txt" );
+  print STDERR "$POPCON: $code\n";
+}
+
+sub load_packages
+{
+  print STDERR "Loading package file\n";
+  my $fh = open_bz2_file( "/org/ddtp.debian.net/Packages/Packages_${DIST}_main_${ARCH}.bz2" );
+  parse_header_format( $fh, \&process_package );
+  close $fh;
+}
+
+# Helper for load_packages
+sub process_package
+{
+  my $hash = shift;
+  my $md5 = md5_hex( $hash->{Description}."\n" );
+#  print "$hash->{Package} : $md5\n";
+  my $package = $hash->{Package};
+  $descrlist{$package}{$md5} = 0;
+  $hash->{Priority} ||= 'unknown';
+  $descrlist{$package}{priority} = $hash->{Priority};
+  $descrlist{$package}{md5} = $md5;
+
+  print "[".$hash->{Description}."]\n" if $package eq "kuvert";
+  print "$package: $hash->{Priority} ($md5)\n" if $package eq "kuvert";
+  
+  if( $hash->{Priority} =~ /required|important|standard/ )
+  { $important_packages{$package}{$md5} = 0 }
+}
+
+# This goes through the package list and compares it against the DDTP.
+# Firstly to count the number of each priority, secondly to detect missing
+# package entries.
+
+sub count_packages
+{
+  $output{zombie} = "";
+  my %zombie;
+  PACKAGE: for my $package (keys %descrlist)
+  {
+    my $md5 = $descrlist{$package}{md5};
+    my $prio = $descrlist{$package}{priority};
+    
+    my @alt_md5s = ();
+    
+    if( not defined $descrmd5{$md5} )
+    {
+      warn "Can't find md5 ($md5), package $package\n";
+      next;
+    }
+    my $desc_id = $descrmd5{$md5};
+    
+#    next unless $prio =~ /required|important|standard/;
+#    for my $desc_id ($descrlist{$package}{$md5}, keys %desc_id_index)
+#    {
+#      next if $desc_id == 0;
+#      next unless $desc_id_index{$desc_id}{package} eq $package;
+#      push @alt_md5s, $desc_id_index{$desc_id}{md5};
+#      next unless $desc_id_index{$desc_id}{md5} eq $md5;
+      
+      $total_counts{$prio}++;
+#      next PACKAGE;
+#    }
+#    if( not defined $zombie{$prio} ) { $zombie{$prio} = [] }
+#    push @{$zombie{$prio}}, $package;
+#    
+#    print STDERR "Zombie: $package ($md5) [".join(",",@alt_md5s)."]\n";
+  }
+  
+  $total_counts{popconN} = $POPCON_COUNT;
+  $total_counts{popconrank} = $popconrank_total;
+  
+  for my $prio (@Priorities)
+  {
+    next if not defined $zombie{$prio};
+    my $count = scalar(@{$zombie{$prio}});
+    $output{zombie} .= "<li>$count $prio packages<br>\n".join(", ",@{$zombie{$prio}})."\n";
+  }
+}
+
+sub report_translations
+{
+  for my $prio (@Priorities)
+  {
+    $output_header{$prio} ||= ucfirst($prio);
+  }
+  $output{mainheader} = "<tr><th>Lang</th>".join("", map { "<th>".$output_header{$_}."</th>" } @Priorities)."</tr>\n";
+  $output{mainfooter} = "<tr><th>Package count</th>".join("", map { "<td align=right>$total_counts{$_}</td>" } @Priorities)."</tr>\n";
+  for my $lang (@langs)
+  {
+    my %count;
+#    for my $desc_id (keys %desc_id_index)
+    for my $package (keys %descrlist)
+    {
+#      my $package = $desc_id_index{$desc_id}{package};
+
+#      die "No package name for desc_id $desc_id\n" unless defined $package;
+      
+#      my $md5 = $desc_id_index{$desc_id}{md5};
+      my $md5 = $descrlist{$package}{md5};
+ 
+      my $desc_id = $descrmd5{$md5};
+      if (not defined $desc_id)
+      {
+#        warn "Unknown md5 ($md5), package $package\n";
+        next;
+      }
+     
+      # Check if relevent to us
+#      next if not defined $descrlist{$package}{$md5};
+      
+      # Eventually this will assign the desc_id to each package
+#      $descrlist{$package}{$md5} = $desc_id;
+      
+      my $priority = $descrlist{$package}{priority} || 'unknown';
+      
+      if( not exists $desc_id_index{$desc_id}{translated}{$lang} )
+      {
+        # This package missing
+        if( not defined $missing{$lang}{$priority} )
+        {
+          $missing{$lang}{$priority} = [];
+        }
+        push @{$missing{$lang}{$priority}}, $package;
+        next;
+      }
+      
+      $count{$priority}++ 
+    }
+
+    # Popcon500 scores    
+    for my $package (keys %popconN)
+    {
+      if( not defined $descrlist{$package} )
+      { print STDERR "Popcon: unknown package $package\n"; next }
+      
+      my $md5 = $descrlist{$package}{md5};
+      
+      if( not exists $descrmd5{$md5} )
+      { print STDERR "Popcon: package $package with md5 not have known desc_id\n"; next }
+
+      my $desc_id = $descrmd5{$md5};
+      
+      if( not exists $desc_id_index{$desc_id}{translated}{$lang} )
+      {
+        # This package missing
+        if( not defined $missing{$lang}{popconN} )
+        {
+          $missing{$lang}{popconN} = [];
+        }
+        push @{$missing{$lang}{popconN}}, $package;
+        next;
+      }
+      
+      $count{popconN}++;
+    }
+    if( exists $missing{$lang}{popconN} )
+    {
+      $missing{$lang}{popconN} = [ sort { $popconN{$a} <=> $popconN{$b} } @{ $missing{$lang}{popconN} } ];
+    }
+    $total_counts{popconN} = $POPCON_COUNT;
+    
+    # PopconRank scores, we go throug the entire list of packages and if it's translated, add the vote count
+    for my $package (keys %popconrank)
+    {
+      # We don't worry about warnings here, too many packages to worry about
+      if( not defined $descrlist{$package} )
+      { next }
+      
+      my $md5 = $descrlist{$package}{md5};
+      
+      if( not exists $descrmd5{$md5} )
+      { next }
+
+      my $desc_id = $descrmd5{$md5};
+      
+      if( not exists $desc_id_index{$desc_id}{translated}{$lang} )
+      {
+        # This package missing
+        if( not defined $missing{$lang}{popconrank} )
+        {
+          $missing{$lang}{popconrank} = [];
+        }
+        push @{$missing{$lang}{popconrank}}, $package;
+        next;
+      }
+      
+      $count{popconrank} += $popconrank{$package};
+    }
+    if( exists $missing{$lang}{popconrank} )
+    {
+      $missing{$lang}{popconrank} = [ sort { $popconrank{$b} <=> $popconrank{$a} } @{ $missing{$lang}{popconrank} } ];
+    }
+    $total_counts{popconrank} = $popconrank_total;
+    
+    my $score = 0;
+    $output{main}{$lang} .= "<tr><td>$lang ".(defined $longnames{$lang}?"($longnames{$lang})":"")."</td>";
+    for my $prio (@Priorities)
+    {
+      if( not defined $count{$prio} ) { $count{$prio} = 0 }
+
+      $score += ($scores{$prio}/$total_counts{$prio}) * $count{$prio};
+      
+      print STDERR "$lang: $prio ($count{$prio}/$total_counts{$prio}) ";
+      if( $total_counts{$prio} - $count{$prio} < 10 and defined $missing{$lang}{$prio})
+      { print STDERR "[", join(",", @{$missing{$lang}{$prio}}), "]" }
+      print STDERR"\n";
+      
+      $output{main}{$lang} .= colour_field( $count{$prio},$total_counts{$prio}, $missing{$lang}{$prio}, $prio eq "popconrank" );
+    }
+    $output{main}{$lang} .= "</tr>\n";
+    
+    $output{main}{$lang} = [ $score, $output{main}{$lang} ];
+    
+#    print "$lang: ", (map { "$_($count{$_}/$total_counts{$_}) " } keys %count), "\n";
+  }
+}
+
+# Called after load_package, to retrive update info from website
+sub parse_ddtp_index
+{
+  $important_packages{'kuvert'} = 1;
+
+  # First pull stuff from DB
+  my $sth = $dbh->prepare( "select package, description_id, description_md5, language ".
+                           "from description_tag_tb dt ".
+                                     "inner join description_tb d using(description_id) ".
+                                     "left outer join translation_tb using (description_id) ".
+                           "where tag = ? ORDER BY date_end" );
+  $sth->execute($DIST);
+  
+  while( my($package,$desc_id,$md5,$lang) = $sth->fetchrow_array )
+  {
+    $descrmd5{$md5} = $desc_id;
+    $desc_id_index{$desc_id}{md5} = $md5;
+#    $desc_id_index{$desc_id}{package} = $package;
+    next if not defined $lang;
+    $desc_id_index{$desc_id}{translated}{$lang} = 0;
+  }
+  
+  print STDERR "Have ", scalar(keys %descrmd5), " md5s on record\n";
+
+}
+
+sub open_bz2_file
+{
+  my $file = shift;
+ 
+  my $fh;
+ 
+  open $fh, "bzcat $file |" or die "Couldn't open $file ($!)\n";
+  
+  return $fh;
+}
+
+sub parse_header_format
+{
+  my $fh = shift;
+  my $sub = shift;
+
+  my $lastfield = undef;
+  my %hash;
+  while(<$fh>)
+  {
+    chomp;
+    if( /^([\w.-]+): (.*)/ )
+    {
+      $lastfield = $1;
+      $hash{$1} = $2;
+    }
+    elsif( /^( .*)/ )
+    {
+      $hash{$lastfield} .= "\n$_";
+    }
+    elsif( /^$/ )
+    {
+      $sub->( \%hash );
+      %hash = ();
+      $lastfield = undef;
+    }
+  }
+}
+
+sub write_output
+{
+  $output{main} = join( "", map { $_->[1] } sort { $b->[0] <=> $a->[0] } values %{ $output{main} } );
+
+  my $fh;
+  open $fh, ">$OUTPUT" or die "Couldn't write to '$OUTPUT': $!\n";
+  
+  print $fh <<EOF;
+<html>
+<head><title>DDTP stats</title></head>
+<body>
+<h1>DDTP stats</h1>
+Here are some stats generated from the DDTP server with regards to translations.
+<p>
+These stats were current as of @{[ strftime "%F %T %Z (%z)", localtime ]}.
+<p>
+The distribution measured is <b>$DIST/$SECTION</b><br>
+The architecture used is <b>$ARCH</b>
+<p>
+Note this uses the actual priorities out of the Packages files. The DDTS
+uses a slightly different measurement, which is why they don\'t use exactly
+the same list.
+<p>
+The numbers are counts. If it says 35, that means that 35 of the 43 (where
+43 is the total number listed at the bottom) packages of that priority have
+been translated. If you hold your mouse over the number, it gives examples
+of what is missing.
+<p>
+Popcon500 simply counts the number of translated packages in the top 500 ranked in the
+<a href="http://popcon.debian.org/by_vote">PopCon-rank-by-vote</a>. This is to get some idea
+of the translations with respect to the packages people actually use.
+<p>
+Popconrank counts the number of votes for translated packages. That is,
+roughly, the percentage indicates the probability that a vote for a package
+in popcon was a vote for a translated package.
+<table>
+<caption>Number of translated package descriptions per category from the Package file:</caption>
+<tr><td></td><th colspan=5>Category</th></tr>
+$output{mainheader}
+$output{main}
+$output{mainfooter}
+</table>
+<p>
+There are also a number of packages which cannot be translated due to their descriptions not being in the DDTS
+<ul>
+$output{zombie}
+</ul>
+</body>
+</html>
+EOF
+}
+
+sub colour_field
+{
+  my ($num,$total,$missing,$scale) = @_;
+  my $frac = $num/$total;
+  
+  my $r = 255*(1-$frac);
+  my $g = 255*$frac;
+  my $b = 0;
+  
+  ($r,$g,$b) = map { (2*$_+255)/3 } ($r,$g,$b);
+  
+  my $colour = sprintf "#%02X%02X%02X", $r, $g, $b;
+  
+  if( not defined $missing )
+  { $missing = [] }
+  
+  my $missingstr;
+  
+  if( scalar(@$missing) > 20 )
+  { $missingstr = "Missing: ".join(", ",@$missing[0..15])."..." }
+  
+  elsif( scalar(@$missing) > 0 )
+  { $missingstr = "Missing: ".join(", ",@$missing) }
+ 
+  my $percent = int(100*$num/$total);
+  
+  if($scale) { $num = sprintf "%.2fM", $num/1000000 }
+ 
+  return "<td bgcolor=$colour align=center><span".(defined $missingstr?" title='$missingstr'":"").">$num ($percent%)</span></td>";
+}
+
+sub load_popcon
+{
+  my $fh;
+  open $fh, "$data/popcon.txt" or die "Couldn't read popcon data ($!)\n";
+  
+  my $count = 0;
+  $popconrank_total = 0;
+  while(<$fh>)
+  {
+    next if /^#/;
+    next unless /^\d+\s+/;
+    my @F = split /\s+/;
+    next unless defined $descrlist{$F[1]};
+    $count++;
+    if( $count <= $POPCON_COUNT )
+    { $popconN{$F[1]} = $count }
+    # List of all packages, with vote count
+    $popconrank{$F[1]} = $F[3];
+    $popconrank_total += $F[3];
+  }
+  
+  close $fh;
+}
