@@ -1,5 +1,11 @@
 2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* Packages2packages_tb.sh: After failure to download, do not
+	indicate success to download.
+	* Packages2packages_tb.sh: Harmonize logs with a date prefix
+
+2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* ddts-stats: Ignore HTTP code 200 and 500.
 
 2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
