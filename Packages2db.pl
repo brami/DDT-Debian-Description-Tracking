@@ -4,7 +4,7 @@ use diagnostics;
 use strict;
 
 my $packagefile= shift(@ARGV);
-my $distribution= shift(@ARGV); 
+my $distribution= shift(@ARGV);
 
 my $description_id;
 my $description_tag_id;
@@ -23,35 +23,35 @@ my $dbh = DBI->connect(@DSN,
 die $DBI::errstr unless $dbh;
 
 sub desc_to_parts ($) {
-        my $desc = shift;
+	my $desc = shift;
 
-        my @parts;
-        my $part;
-        my @lines=split(/\n/, $desc);
+	my @parts;
+	my $part;
+	my @lines=split(/\n/, $desc);
 
-        foreach (@lines) {
-                if (not @parts) {
-                        push @parts,$_;
-                        $part="";
-                        next;
-                }
-                if ($_ ne " .") {
-                        $part.=$_;
-                        $part.="\n";
-                } else {
-                        push @parts,$part if ($part ne "");
-                        $part="";
-                }
-        }
-        push @parts,$part if ($part ne "");
+	foreach (@lines) {
+		if (not @parts) {
+			push @parts,$_;
+			$part="";
+			next;
+		}
+		if ($_ ne " .") {
+			$part.=$_;
+			$part.="\n";
+		} else {
+			push @parts,$part if ($part ne "");
+			$part="";
+		}
+	}
+	push @parts,$part if ($part ne "");
 
-        return @parts;
+	return @parts;
 
 }
 
 sub scan_packages_file {
 	my $filename= shift(@_);
-	my $distribution= shift(@_); 
+	my $distribution= shift(@_);
 
 	my $package;
 	my $prioritize;
@@ -125,7 +125,7 @@ sub scan_packages_file {
 		my $description_id= shift(@_);
 		my $version= shift(@_);
 		my $package= shift(@_);
-		
+
 		my $package_version_id;
 
 		my $sth = $dbh->prepare("SELECT package_version_id FROM package_version_tb WHERE description_id=? and package=? and version=?");
@@ -177,7 +177,7 @@ sub scan_packages_file {
 
 	open (PACKAGES, "$filename") or die "open packagefile failed";
 	while (<PACKAGES>) {
-		if ($_=~/^$/) {   
+		if ($_=~/^$/) {
 			my $description_orig=$description;
 			eval {
 				$description_id=get_description_id($description_orig);
@@ -215,20 +215,20 @@ sub scan_packages_file {
 			}
 			if (($description_id) and ($distribution eq 'sid')) {
 				if (! is_description_id_active($description_id)) {
-				save_active_to_db($description_id);
+					save_active_to_db($description_id);
 
-				my @parts = desc_to_parts($description);
-		
-				my @parts_md5;
-				foreach (@parts) {
-					push @parts_md5,md5_hex($_);					
-				}
-		
-				my $a=0;
-				while ($a <= $#parts_md5 ) {
-					&save_part_description_to_db($description_id,$parts_md5[$a]);
-					$a++
-				}
+					my @parts = desc_to_parts($description);
+
+					my @parts_md5;
+					foreach (@parts) {
+						push @parts_md5,md5_hex($_);
+					}
+
+					my $a=0;
+					while ($a <= $#parts_md5 ) {
+						&save_part_description_to_db($description_id,$parts_md5[$a]);
+						$a++
+					}
 				}
 			}
 
