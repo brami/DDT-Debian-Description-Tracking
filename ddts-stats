@@ -14,7 +14,6 @@ my $dbh = DBI->connect(@DSN,
 
 die $DBI::errstr unless $dbh;
 
-#my @langs = qw(da de eo es fi fr hu it ja km_KH nl pl pt_BR pt ru sk sv uk zh_CN zh_TW cs ko ca);
 my @langs = map { $_->[0] } @{ $dbh->selectall_arrayref("SELECT DISTINCT language FROM translation_tb") };
 my %longnames = (
     da => 'Danish',
@@ -41,14 +40,14 @@ my %longnames = (
     zh_TW => 'Traditional Chinese',
     km_KH => 'Cambodian (Khmer)',
 );
-my $data = "/org/ddtp.debian.net/Packages/";
+my $data = "/srv/ddtp.debian.net/Packages/";
 
 my $DIST = shift || "etch";
 my $ARCH = "i386";
 my $SECTION = "main";
 
 my $POPCON = "http://popcon.debian.org/by_vote";
-my $OUTPUT = "/org/ddtp.debian.net/www/stats/stats-${DIST}.html";
+my $OUTPUT = "/srv/ddtp.debian.net/www/stats/stats-${DIST}.html";
 
 my $POPCON_COUNT = 500;
 
@@ -82,12 +81,12 @@ exit;
 sub fetch_data
 {
   my $code = mirror( $POPCON, "$data/popcon.txt" );
-  print STDERR "$POPCON: $code\n";
+  warn "$POPCON: $code\n" if ($code != 200 and $code != 300);
 }
 
 sub load_packages
 {
-  print STDERR "Loading package file\n";
+  print "Loading package file\n";
   my $fh = open_bz2_file( "/org/ddtp.debian.net/Packages/Packages_${DIST}_main_${ARCH}.bz2" );
   parse_header_format( $fh, \&process_package );
   close $fh;
@@ -216,12 +215,12 @@ sub report_translations
     for my $package (keys %popconN)
     {
       if( not defined $descrlist{$package} )
-      { print STDERR "Popcon: unknown package $package\n"; next }
+      { warn "Popcon: unknown package $package\n"; next }
       
       my $md5 = $descrlist{$package}{md5};
       
       if( not exists $descrmd5{$md5} )
-      { print STDERR "Popcon: package $package with md5 not have known desc_id\n"; next }
+      { warn "Popcon: package $package with md5 '$md5' has no known desc_id\n"; next }
 
       my $desc_id = $descrmd5{$md5};
       
@@ -285,10 +284,10 @@ sub report_translations
 
       $score += ($scores{$prio}/$total_counts{$prio}) * $count{$prio};
       
-      print STDERR "$lang: $prio ($count{$prio}/$total_counts{$prio}) ";
+      print "$lang: $prio ($count{$prio}/$total_counts{$prio}) ";
       if( $total_counts{$prio} - $count{$prio} < 10 and defined $missing{$lang}{$prio})
-      { print STDERR "[", join(",", @{$missing{$lang}{$prio}}), "]" }
-      print STDERR"\n";
+      { print "[", join(",", @{$missing{$lang}{$prio}}), "]" }
+      print "\n";
       
       $output{main}{$lang} .= colour_field( $count{$prio},$total_counts{$prio}, $missing{$lang}{$prio}, $prio eq "popconrank" );
     }
@@ -322,7 +321,7 @@ sub parse_ddtp_index
     $desc_id_index{$desc_id}{translated}{$lang} = 0;
   }
   
-  print STDERR "Have ", scalar(keys %descrmd5), " md5s on record\n";
+  print "Have ", scalar(keys %descrmd5), " md5s on record\n";
 
 }
 
