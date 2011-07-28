@@ -1,3 +1,11 @@
+2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
+
+	* packages_tb2Packages.pl: Remove dead code (DIST / SECTION).
+	* packages_tb2Packages.pl: Do not output the database to stdout.
+	File name must be provided as parameter.
+	* Packages-lliurex2packages_tb.sh, Packages2packages_tb.sh:
+	Adapted accordingly: run bzip2 on the generated file.
+
 2011-07-26  Nicolas Francois  <nicolas.francois@centraliens.net>
 
 	* Packages2db.pl: Fix typo in comment 'differnet'

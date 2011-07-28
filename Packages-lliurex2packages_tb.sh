@@ -37,7 +37,9 @@ do
 		[ -f $file ] || echo no $file
 	done
 done
-$DB2FILE > Packages/Packages-lliurex_${distribution}.bz2
+$DB2FILE Packages/Packages-lliurex_${distribution}
+rm -f Packages/Packages-lliurex_${distribution}.bz2
+bzip2 Packages/Packages-lliurex_${distribution}
 # Regular vacuum to cut disk usage
 psql ddtp -c "VACUUM"
 

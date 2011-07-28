@@ -13,8 +13,8 @@ die $DBI::errstr unless $dbh;
 
 my $data = "/org/ddtp.debian.net/Packages/";
 
-my $DIST = shift || "etch";
-my $SECTION = shift || "main";
+my $file = shift;
+die "Usage: $0 <Packages>\n" unless defined $file;
 
 export_packages();      # Read packages file
 exit;
@@ -25,7 +25,7 @@ sub export_packages
 
   print " Export package file \n";
   my $fh;
-  open $fh, "| bzip2 " or die "Couldn't pipe to bzip2 ($!)\n";
+  open $fh, '>', "$file" or die "Couldn't write to $file ($!)\n";
 
   my $sth = $dbh->prepare("SELECT package,source,version,tag,priority,maintainer,task,section,description FROM packages_tb ORDER BY package");
   $sth->execute;

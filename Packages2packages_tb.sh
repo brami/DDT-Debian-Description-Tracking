@@ -42,8 +42,10 @@ do
 			[ -f $file ] || echo no $file
 		done
 
-		file="Packages/Packages_${distribution}_${part}.bz2"
-		$DB2FILE > $file
+		file="Packages/Packages_${distribution}_${part}"
+		$DB2FILE $file
+		rm -f $file.bz2
+		bzip2 $file
 	done
 done
 # Regular vacuum to cut disk usage
