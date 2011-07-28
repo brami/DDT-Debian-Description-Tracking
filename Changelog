@@ -1,5 +1,12 @@
 2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* Packages2db.pl: is_description_id_active() added.
+	* Packages2db.pl: Do not inject description_id in active_tb when
+	already in active_tb (and do not compute or re-inject their
+	parts).
+
+2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* Packages2packages_tb.pl: Ignore errors when injecting
 	descriptions in the temporary database. Errors are expected since
 	duplicate entries are injected. There is no urgency to fix this.

@@ -97,6 +97,17 @@ sub scan_packages_file {
 		return $description_tag_id;
 	}
 
+	sub is_description_id_active {
+		my $description_id= shift(@_);
+
+		my $sth = $dbh->prepare("SELECT description_id FROM active_tb WHERE description_id=?");
+		$sth->execute($description_id);
+		if ($sth->fetchrow_array) {
+			return 1;
+		}
+		return 0;
+	}
+
 	sub save_active_to_db {
 		my $description_id= shift(@_);
 
@@ -159,7 +170,7 @@ sub scan_packages_file {
 			$dbh->commit;   # commit the changes if we get this far
 		};
 		if ($@) {
-			warn "Packages2db.pl: failed to INSERT description_id '$description_id', part_md5 '$part_md5' into part_description_tb:$@\n";
+			warn "Packages2db.pl: failed to INSERT description_id '$description_id', part_md5 '$part_md5' into part_description_tb: $@\n";
 			$dbh->rollback; # undo the incomplete changes
 		}
 	}
@@ -203,6 +214,7 @@ sub scan_packages_file {
 				save_version_to_db($description_id,$version,$package);
 			}
 			if (($description_id) and ($distribution eq 'sid')) {
+				if (! is_description_id_active($description_id)) {
 				save_active_to_db($description_id);
 
 				my @parts = desc_to_parts($description);
@@ -216,6 +228,7 @@ sub scan_packages_file {
 				while ($a <= $#parts_md5 ) {
 					&save_part_description_to_db($description_id,$parts_md5[$a]);
 					$a++
+				}
 				}
 			}
 
