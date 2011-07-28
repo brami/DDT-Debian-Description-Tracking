@@ -1,5 +1,12 @@
 2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* Packages2packages_tb.pl: Ignore errors when injecting
+	descriptions in the temporary database. Errors are expected since
+	duplicate entries are injected. There is no urgency to fix this.
+	Wait for a Translation-en file.
+
+2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* packages_tb2Packages.pl: Remove dead code (DIST / SECTION).
 	* packages_tb2Packages.pl: Do not output the database to stdout.
 	File name must be provided as parameter.

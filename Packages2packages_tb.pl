@@ -53,7 +53,8 @@ sub process_package
     $dbh->commit;   # commit the changes if we get this far
   };
   if ($@) {
-    warn "Packages2packages_tb.pl: failed to INSERT Package '".$hash->{Package}."', Version '".$hash->{Version}."': $@\n";
+    # By design, the commit in packages_tb fails when a (package,version) exists in another architecture.
+    # FIXME: We ignore these errors.
     $dbh->rollback; # undo the incomplete changes
   }
 }
