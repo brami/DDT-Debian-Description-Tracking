@@ -1,5 +1,9 @@
 2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
 
+	* ddts-stats: Ignore HTTP code 200 and 500.
+
+2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
+
 	* ddts-stats: Cleanup.
 	* ddts-stats: Use /srv instead of /org
 	* ddts-stats: USe warn instead of print STDERR.

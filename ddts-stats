@@ -81,7 +81,7 @@ exit;
 sub fetch_data
 {
   my $code = mirror( $POPCON, "$data/popcon.txt" );
-  warn "$POPCON: $code\n" if ($code != 200 and $code != 300);
+  warn "$POPCON: $code\n" if ($code != 200 and $code != 500);
 }
 
 sub load_packages
