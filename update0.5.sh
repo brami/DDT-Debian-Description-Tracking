@@ -19,9 +19,9 @@ date                                      >> $LOGPREFIX.log
 ./file2Translation_udd.sh                 >> $LOGPREFIX.log 2>> $LOGPREFIX.err
 
 # Regenerate the stats files
-/home/kleptog/stats/ddts-stats sid >/dev/null
-/home/kleptog/stats/ddts-stats wheezy >/dev/null
-/home/kleptog/stats/ddts-stats squeeze >/dev/null
+./ddts-stats sid                          >> $LOGPREFIX.log 2>> $LOGPREFIX.err
+./ddts-stats wheezy                       >> $LOGPREFIX.log 2>> $LOGPREFIX.err
+./ddts-stats squeeze                      >> $LOGPREFIX.log 2>> $LOGPREFIX.err
 
 #cp -a /home/grisu/public_html/ddtp/* /var/www/ddtp/
 

@@ -1,3 +1,8 @@
+2011-07-30  Nicolas Francois  <nicolas.francois@centraliens.net>
+
+	* update0.5.sh: Use the ddts-stats scripts instead of one from a
+	home directory. And redirect logs / error messages.
+
 2011-07-28  Nicolas Francois  <nicolas.francois@centraliens.net>
 
 	* Packages2packages_tb.sh: After failure to download, do not
