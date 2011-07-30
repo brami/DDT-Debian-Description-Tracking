@@ -1,0 +1,122 @@
+Stand: 2741 63ee4d31ebff54532058c0e989d321e0bddc93a0
+
+per cron:
+ - update.sh
+    -> call Packages2packages_tb.sh
+       # read all Packages files per dists and write a collected one
+        - download all Packages-files from ftp server
+        - over all distribs (sid as lasted)
+             - Truncate packages_tb
+             -> call Packages2packages_tb.pl
+                 - import every package
+             -> call packages_tb2Packages.pl
+    -> call Packages2db.sh
+       # import the collected Packages files
+        -> call Packages2db.pl squeeze main contrib
+        -> call Packages2db.pl wheezy main contrib
+        - TRUNCATE active_tb
+        - TRUNCATE part_description_tb
+        -> call Packages2db.pl sid main contrib
+        - make a db dump
+    -> call completeTranslations.sh
+       # complete translation of all active packages with translated parts
+        -> call completeTranslations.pl for every language
+    -> call db2web.sh
+       # make the index page from DDT
+        - make a source tar.gz
+        - make the index.html
+        -> call db2web.pl for the letter pages
+        -> call stat.pl
+        - make the gnuplot pics
+    -> call file2Translation.sh
+       # generate the Translation files
+        - download alle files from http://ftp-master.debian.org/i18n/
+        -> call file2Translation.pl for all dists and langs
+            # generate one Translation file
+        -> call ddtp-dinstall/ddtp_i18n_check.sh
+        -> call /srv/scripts/ddtp_dinstall.sh
+    -> call /home/kleptog/stats/ddts-stats for the dists
+    - rotate log files
+
+ - update0.5.sh is mostly the same:
+    - don't update the ddt database with new Data
+      (don't call Packages2packages_tb.sh, Packages2db.sh, completeTranslations.sh)
+    - update the web (call db2web.sh)
+    - update Translation files (call file2Translation.sh)
+    -> call file2Translation_udd.sh
+       # (extra) generate Translation for the UDD
+        -> call file2Translation.pl for all dists and langs
+           # generate one udd Translation file
+
+unknow: ;-)
+ - db2status_page.cgi
+   # generate a translation status page
+
+Tools:
+ - db_change_lang.pl
+   # change a language in all tables (like pt -> pt_BR)
+ - db_del_lang.pl
+   # remove one language
+
+unused:
+ - db2po.sh db2po.pl
+    -> call db2po.pl for every lang and dist 
+       # generate po files
+ - db2file.pl
+   # generate 
+
+
+----------- DDT Tables -----------
+# Store the english Description
+Packages2db.pl           -> description_tb      -> completeTranslations.pl
+                                                -> db2Translation.pl
+                                                -> file2Translation.pl
+                                                -> Packages2db.pl
+                                                -> Translation2db.pl
+                                                -> DDT (ddt.cgi, db2web.pl, stat.pl)
+                                                -> DDTP (db2status_page.cgi)
+                                                -> db2po.pl (unused)
+                                                -> db2file.pl (unused)
+
+# cross list of descriptions_id and part_md5
+Packages2db.pl           -> part_description_tb -> DDT (ddt.cgi)
+
+# store distri and start- and end-date 
+Packages2db.pl           -> description_tag_tb  -> db2Translation.pl
+                                                -> Packages2db.pl
+                                                -> DDT (ddt.cgi, db2web.pl, ddts-stats)
+                                                -> db2po.pl (unused)
+
+# store package name and version with the description
+Packages2db.pl           -> package_version_tb  -> Packages2db.pl
+                                                -> file2Translation.pl
+                                                -> DDT (ddt.cgi)
+
+# store the description_id from sid
+Packages2db.pl           -> active_tb           -> completeTranslations.pl
+                                                -> DTT (stat.pl)
+
+
+# a temp table (only for update-process)
+Packages2packages_tb.pl  -> packages_tb         -> packages_tb2Packages.pl
+
+----------- DDTP Tables -----------
+# store the translation
+completeTranslations.pl  -> translation_tb      -> completeTranslations.pl
+                                                -> file2Translation.pl
+                                                -> DDT (ddt.cgi, stat.pl, ddts-stats)
+                                                -> DDTP (db2status_page.cgi)
+                                                -> db2file.pl (unused)
+
+# store translated parts of description 
+Translation2db.pl        -> part_tb             -> completeTranslations.pl
+                                                -> DDT (ddt.cgi)
+
+                            owner_tb            -> DDT (ddt.cgi)
+-----------
+
+TODO:
+ - remove version_tb
+   Packages2db.pl           -> version_tb          -> Packages2db.pl # can removed?
+ - better renamed to part_tb to translated_part_tb ? ?
+
