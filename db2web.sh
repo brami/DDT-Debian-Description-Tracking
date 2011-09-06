@@ -42,7 +42,7 @@ echo "set xdata time" >> lib/sid-stat.gnuplot
 #echo "set logscale y" >> lib/sid-stat.gnuplot
 echo "set format x \"%d.%m\\n%Y\"" >> lib/sid-stat.gnuplot
 
-LANGS=`psql ddtp -q -A -t -c "select distinct language from translation_tb"`
+LANGS=`psql ddtp -q -A -t -c "select distinct language from translation_tb where description_id>1"`
 for lang in $LANGS
 do
   echo "<h3>$lang in sid</h3>" >> www/index.html.new

@@ -3,7 +3,7 @@
 cd ~ddtp
 
 # Fetch active langs from database
-LANGS=`psql ddtp -q -A -t -c "select distinct language from translation_tb"`
+LANGS=`psql ddtp -q -A -t -c "select distinct language from translation_tb where description_id>1"`
 
 #DISTS="lenny sid"
 #DISTS="squeeze sid"

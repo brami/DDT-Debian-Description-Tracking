@@ -165,7 +165,7 @@ while(my ($key,$count,$date) = $sth->fetchrow_array) {
 
 my @lang;
 
-$sth = $dbh->prepare("select distinct language from translation_tb");
+$sth = $dbh->prepare("select distinct language from translation_tb where description_id>1");
 $sth->execute();
 while(my ($lang) = $sth->fetchrow_array) {
 	push (@lang,$lang);
