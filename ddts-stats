@@ -104,9 +104,6 @@ sub process_package
   $descrlist{$package}{priority} = $hash->{Priority};
   $descrlist{$package}{md5} = $md5;
 
-  print "[".$hash->{Description}."]\n" if $package eq "kuvert";
-  print "$package: $hash->{Priority} ($md5)\n" if $package eq "kuvert";
-  
   if( $hash->{Priority} =~ /required|important|standard/ )
   { $important_packages{$package}{$md5} = 0 }
 }
@@ -128,7 +125,7 @@ sub count_packages
     
     if( not defined $descrmd5{$md5} )
     {
-      warn "Can't find md5 ($md5), package $package\n";
+      print "Can't find md5 ($md5), package $package in $DIST\n";
       next;
     }
     my $desc_id = $descrmd5{$md5};

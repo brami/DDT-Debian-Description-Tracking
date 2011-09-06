@@ -37,6 +37,7 @@ sub get_translation {
 	$sth->execute($description_id,$lang);
 	($translation) = $sth->fetchrow_array;
 	if ($translation and (( $translation =~ tr/\n/\n/ )<2)) {
+		#warn "Error in translation from id:$description_id in lang:$lang\n";
 		undef $translation;
 	}
 	return $translation;

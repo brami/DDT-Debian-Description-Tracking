@@ -7,9 +7,6 @@ LOGPREFIX=$LOGDIR/update.cron.$(date "+%Y%m%d-%H%M")
 
 [ ! -d "$LOGDIR" ] && mkdir "$LOGDIR"
 
-# This should be removed later -- Nekral
-date
-
 date                                      >> $LOGPREFIX.log
 #./Packages2packages_tb.sh                 >> $LOGPREFIX.log 2>> $LOGPREFIX.err
 #./Packages2db.sh                          >> $LOGPREFIX.log 2>> $LOGPREFIX.err
@@ -29,5 +26,3 @@ date                                      >> $LOGPREFIX.log
 
 cat $LOGPREFIX.err
 
-# This should be removed later -- Nekral
-date

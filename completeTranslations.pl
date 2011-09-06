@@ -52,7 +52,12 @@ sub get_descrition_ids {
 	my $lang=shift ;
 
 	#my $sth = $dbh->prepare("SELECT description,description_id FROM description_tb WHERE description_id in (SELECT description_id FROM active_tb) and description_id not in (SELECT description_id FROM translation_tb WHERE description_id in (SELECT description_id FROM active_tb) and language=?) and package in (SELECT package FROM description_tb WHERE description_id in (SELECT description_id FROM translation_tb WHERE language=?) GROUP BY package)");
-	my $sth = $dbh->prepare("SELECT description,description_id FROM description_tb WHERE description_id in (SELECT description_id FROM active_tb) and description_id not in (SELECT description_id FROM translation_tb WHERE description_id in (SELECT description_id FROM active_tb) and language=?)");
+	#my $sth = $dbh->prepare("SELECT description,description_id FROM description_tb WHERE description_id in (SELECT description_id FROM active_tb) and description_id not in (SELECT description_id FROM translation_tb WHERE description_id in (SELECT description_id FROM active_tb) and language=?)");
+
+        # check all descriptions... 
+	#my $sth = $dbh->prepare("SELECT description,description_id FROM description_tb WHERE description_id not in (SELECT description_id FROM translation_tb WHERE language=?)");
+        # only the last descriptions from today
+	my $sth = $dbh->prepare("SELECT description,description_id FROM description_tb WHERE description_id in (SELECT description_id from description_tag_tb where date_end=current_date group by description_id) and description_id not in (SELECT description_id FROM translation_tb WHERE language=?)");
 
 	#$sth->execute($lang,$lang);
 	$sth->execute($lang);
@@ -108,7 +113,9 @@ sub get_descrition_ids {
 	}
 }
 
-get_descrition_ids(shift);
+my $lang=shift ;
+
+get_descrition_ids($lang);
 
 print "#p_trans: $count #full_trans: $count_trans\n";
 

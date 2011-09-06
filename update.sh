@@ -1,14 +1,15 @@
 #!/bin/bash
 
+#echo "update.sh disabled by Nekral (2011 07 27 19:48) to trigger it manually for the next round"
+#exit 1
+
+
 cd ~ddtp
 
 LOGDIR=/srv/ddtp.debian.net/cronlog
 LOGPREFIX=$LOGDIR/update.cron.$(date "+%Y%m%d-%H%M")
 
 [ ! -d "$LOGDIR" ] && mkdir "$LOGDIR"
-
-# This should be removed later -- Nekral
-date
 
 date                                      >> $LOGPREFIX.log
 ./Packages2packages_tb.sh                 >> $LOGPREFIX.log 2>> $LOGPREFIX.err
@@ -31,6 +32,3 @@ echo "OK"                                 >> $LOGPREFIX.log
 date                                      >> $LOGPREFIX.log
 
 cat $LOGPREFIX.err
-
-# This should be removed later -- Nekral
-date
