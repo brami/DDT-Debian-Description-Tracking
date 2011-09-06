@@ -14,6 +14,7 @@ date                                      >> $LOGPREFIX.log
 ./db2web.sh                               >> $LOGPREFIX.log 2>> $LOGPREFIX.err
 ./file2Translation.sh                     >> $LOGPREFIX.log 2>> $LOGPREFIX.err
 ./file2Translation_udd.sh                 >> $LOGPREFIX.log 2>> $LOGPREFIX.err
+./db2po.sh zh_CN sid                      >> $LOGPREFIX.log 2>> $LOGPREFIX.err
 
 # Regenerate the stats files
 ./ddts-stats sid                          >> $LOGPREFIX.log 2>> $LOGPREFIX.err

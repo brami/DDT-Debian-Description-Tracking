@@ -138,7 +138,7 @@ foreach (get_description_ids($dists)) {
 	print FILE "\"POT-Creation-Date: \\n\"\n";
 	print FILE "\"PO-Revision-Date: \\n\"\n";
 	print FILE "\"Last-Translator: \\n\"\n";
-	print FILE "\"Language-Team: German \\n\"\n";
+	print FILE "\"Language-Team: \\n\"\n";
 	print FILE "\"MIME-Version: 1.0\\n\"\n";
 	print FILE "\"Content-Type: text/plain; charset=UTF-8\\n\"\n";
 	print FILE "\"Content-Transfer-Encoding: 8bit\\n\"\n";
@@ -157,6 +157,12 @@ foreach (get_description_ids($dists)) {
 			$tparts[$index] =~ s/^/\"/mg;
 			$tparts[$index] =~ s/$/\\n\"/mg;
 		}
+		print FILE "#. Translators: This is the short description. \n" if ($index == 0);
+		print FILE "#.\n" if ($index == 0);
+		print FILE "#: short\n" if ($index == 0);
+		print FILE "#. Translators: This is the long description part $index. \n" if ($index > 0);
+		print FILE "#.\n" if ($index > 0);
+		print FILE "#: long part $index\n" if ($index > 0);
 		print FILE "msgid \"\"\n";
 		print FILE "$parts[$index]\n";
 		print FILE "msgstr \"\"\n";
