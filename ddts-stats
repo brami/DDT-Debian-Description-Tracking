@@ -16,6 +16,7 @@ die $DBI::errstr unless $dbh;
 
 my @langs = map { $_->[0] } @{ $dbh->selectall_arrayref("SELECT DISTINCT language FROM translation_tb") };
 my %longnames = (
+    bg => 'Bulgarian',
     da => 'Danish',
     de => 'German',
     ca => 'Catalan',
@@ -31,6 +32,7 @@ my %longnames = (
     pt => 'Portugese',
     ru => 'Russian',
     sk => 'Slovak',
+    sr => 'Serbian',
     sv => 'Swedish',
     uk => 'Ukrainian',
     es => 'Spanish',
