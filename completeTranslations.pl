@@ -5,6 +5,8 @@ use strict;
 
 my $count=0;
 my $count_trans=0;
+my $count_part=0;
+my $count_1part=0;
 
 use DBI;
 use Digest::MD5 qw(md5_hex);
@@ -96,7 +98,7 @@ sub get_descrition_ids {
 		}
 		
 		if ($untranslated==0) {
-			#print "  $d_id is full translated\n";
+                        #print "  $d_id is full translated\n";
 			$count_trans++;
 			#print "$translation";
                         eval {
@@ -109,6 +111,24 @@ sub get_descrition_ids {
                                 $dbh->rollback; # undo the incomplete changes
                         }
 
+		} else {
+			if ($translated>0) {
+				$count_part++;
+				if ($untranslated==1) {
+					$count_1part++;
+	
+					#print "   save_part_milestone_to_db: $d_id milestone: part:$lang \n";
+	
+					eval {
+						$dbh->do("INSERT INTO description_milestone_tb (description_id,milestone) VALUES (?,?);", undef, $d_id, "part:$untranslated-$lang");
+						$dbh->commit;   # commit the changes if we get this far
+					};
+					if ($@) {
+						# warn "Packages2db.pl: failed to INSERT Package '$d_id', milestone 'part:$lang' into description_milestone_tb: $@\n";
+						$dbh->rollback; # undo the incomplete changes
+					}
+				}
+			}
 		}
 	}
 }
@@ -117,5 +137,5 @@ my $lang=shift ;
 
 get_descrition_ids($lang);
 
-print "#p_trans: $count #full_trans: $count_trans\n";
+print "#checked description:$count #partly translation:$count_part #one missing part:$count_1part #full_trans:$count_trans\n";
 

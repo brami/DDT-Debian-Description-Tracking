@@ -61,6 +61,8 @@ sub scan_packages_file {
 	my $source;
 	my $priority;
 	my $section;
+	my @task;
+	my @tag;
 	my $version;
 
 	sub get_old_description_id {
@@ -68,7 +70,10 @@ sub scan_packages_file {
 
 		my $old_description_id;
 
-		my $sth = $dbh->prepare("SELECT description_id FROM description_tb WHERE package=?");
+		#my $sth = $dbh->prepare("SELECT description_id FROM description_tb WHERE package=?");
+		#my $sth = $dbh->prepare("SELECT description_id from package_version_tb where package=?");
+		# better without LIMIT ?
+		my $sth = $dbh->prepare("SELECT description_id from package_version_tb where package=? order by description_id DESC LIMIT 1");
 		$sth->execute($package);
 		($old_description_id) = $sth->fetchrow_array;
 		return $old_description_id;
@@ -161,6 +166,100 @@ sub scan_packages_file {
 		}
 	}
 
+	sub save_milestone_to_db {
+		my $description_id= shift(@_);
+		my $priority= shift(@_);
+		my $section= shift(@_);
+		my @task= @_;
+
+		my $sth = $dbh->prepare("DELETE FROM description_milestone_tb WHERE description_id=?  and 
+                                                                                    not milestone like 'rtrn:%' and 
+                                                                                    not milestone like 'popc:%' and 
+                                                                                    not milestone like 'part:%'");
+		$sth->execute($description_id);
+
+		eval {
+			$dbh->do("INSERT INTO description_milestone_tb (description_id,milestone) VALUES (?,?);", undef, $description_id, "prio:$priority");
+			$dbh->commit;   # commit the changes if we get this far
+		};
+		if ($@) {
+			warn "Packages2db.pl: failed to INSERT Package '$description_id', milestone 'prio:$priority' into description_milestone_tb: $@\n";
+			$dbh->rollback; # undo the incomplete changes
+		}
+
+		eval {
+			$dbh->do("INSERT INTO description_milestone_tb (description_id,milestone) VALUES (?,?);", undef, $description_id, "sect:$section");
+			$dbh->commit;   # commit the changes if we get this far
+		};
+		if ($@) {
+			warn "Packages2db.pl: failed to INSERT Package '$description_id', milestone 'sect:$section' into description_milestone_tb: $@\n";
+			$dbh->rollback; # undo the incomplete changes
+		}
+
+		foreach (@task) {
+			eval {
+				$dbh->do("INSERT INTO description_milestone_tb (description_id,milestone) VALUES (?,?);", undef, $description_id, "task:$_");
+				$dbh->commit;   # commit the changes if we get this far
+			};
+			if ($@) {
+				warn "Packages2db.pl: failed to INSERT Package '$description_id', milestone 'task:$_' into description_milestone_tb: $@\n";
+				$dbh->rollback; # undo the incomplete changes
+			}
+		}
+	}
+
+	sub save_tag_milestone_to_db {
+		my $description_id= shift(@_);
+		my @tags= @_;
+
+		my @splittags;
+
+                foreach my $in (@tags) {
+			#print "  $description_id task: $in\n";
+	                if ($in =~ m/^([^{]*)\{([^}]*)\}(.*)$/) {
+		                my $prefix  = $1;
+		                my $postfix = $3;
+		                my @list = split /,/,$2;
+		                foreach my $o (@list) {
+			                push @splittags, $prefix.$o.$postfix;
+			                }
+	                } else {
+		                push @splittags, $in;
+	                }
+                }
+
+		#print "$description_id task: " . join(" ", @splittags) . "\n";
+
+		foreach (@splittags) {
+			eval {
+				$dbh->do("INSERT INTO description_milestone_tb (description_id,milestone) VALUES (?,?);", undef, $description_id, "tags:$_");
+				$dbh->commit;   # commit the changes if we get this far
+			};
+			if ($@) {
+				warn "Packages2db.pl: failed to INSERT Package '$description_id', milestone 'tags:$_' into description_milestone_tb: $@\n";
+				$dbh->rollback; # undo the incomplete changes
+			}
+		}
+	}
+
+	sub save_oldtranslang_milestone_to_db {
+		my $description_id= shift(@_);
+		my @oldtranslangs = @_;
+
+		print "     save_oldtranslang_milestone_to_db: $description_id task: " . join(" ", @oldtranslangs) . " #:$#oldtranslangs\n";
+
+		foreach (@oldtranslangs) {
+			eval {
+				$dbh->do("INSERT INTO description_milestone_tb (description_id,milestone) VALUES (?,?);", undef, $description_id, "rtrn:$_");
+				$dbh->commit;   # commit the changes if we get this far
+			};
+			if ($@) {
+				warn "Packages2db.pl: failed to INSERT Package '$description_id', milestone 'oldtranslangs:$_' into description_milestone_tb: $@\n";
+				$dbh->rollback; # undo the incomplete changes
+			}
+		}
+	}
+
 	sub save_part_description_to_db {
 		my $description_id= shift(@_);
 		my $part_md5      = shift(@_);
@@ -179,6 +278,7 @@ sub scan_packages_file {
 	while (<PACKAGES>) {
 		if ($_=~/^$/) {
 			my $description_orig=$description;
+			my @oldtranslang;
 			eval {
 				$description_id=get_description_id($description_orig);
 				if ($description_id) {
@@ -197,6 +297,15 @@ sub scan_packages_file {
 					my $old_description_id=get_old_description_id($package);
 					if ($old_description_id) {
 						print "   changed description from $package ($source)\n" ;
+                                                # search for translations of the old description:
+	                                        # SELECT language FROM translation_tb where description_id=
+						my $lang;
+						my $sth = $dbh->prepare("SELECT language FROM translation_tb where description_id=?");
+						$sth->execute($old_description_id);
+						while(($lang) = $sth->fetchrow_array) {
+							#print "       old description was translated in $lang\n" ;
+							push @oldtranslang,$lang;
+						}
 					}
 					my $md5=md5_hex($description_orig);
 					$dbh->do("INSERT INTO description_tb (description_md5, description, package, source, prioritize) VALUES (?,?,?,?,?);", undef, $md5,$description,$package,$source,$prioritize);
@@ -212,6 +321,13 @@ sub scan_packages_file {
 			}
 			if (($description_id)) {
 				save_version_to_db($description_id,$version,$package);
+			}
+			if (($description_id)) {
+				save_milestone_to_db($description_id,$priority, $section, @task);
+				save_tag_milestone_to_db($description_id,@tag);
+				if ($#oldtranslang>=0) {
+					save_oldtranslang_milestone_to_db($description_id,@oldtranslang);
+				}
 			}
 			if (($description_id) and ($distribution eq 'sid')) {
 				if (! is_description_id_active($description_id)) {
@@ -255,6 +371,7 @@ sub scan_packages_file {
 			$version=$1;
 		}
 		if (/^Tag: (.+)/) { # new item
+			@tag=split(',? +',$1);
 			$tag=$1;
 			$prioritize += 1;
 			$prioritize += 2 if $tag =~ /role[^ ]+program/i;
@@ -287,7 +404,7 @@ sub scan_packages_file {
 		if (/^Maintainer: (.*)/) { # new item
 		}
 		if (/^Task: (.*)/) { # new item
-			$priority="task";
+			@task=split('[, ]+',$1);
 			$prioritize+=2;
 		}
 		if (/^Section: (\w+)/) { # new item

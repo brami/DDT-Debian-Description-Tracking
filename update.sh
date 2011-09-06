@@ -23,6 +23,9 @@ date                                      >> $LOGPREFIX.log
 ./ddts-stats wheezy                       >> $LOGPREFIX.log 2>> $LOGPREFIX.err
 ./ddts-stats squeeze                      >> $LOGPREFIX.log 2>> $LOGPREFIX.err
 
+./popcon2db.pl                            >> $LOGPREFIX.log 2>> $LOGPREFIX.err
+./fill_statistic.pl                       >> $LOGPREFIX.log 2>> $LOGPREFIX.err
+
 #cp -a /home/grisu/public_html/ddtp/* /var/www/ddtp/
 
 echo -n "Rotating (/srv/ddtp.debian.net/logrotate.config)" ... >> $LOGPREFIX.log

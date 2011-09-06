@@ -152,3 +152,44 @@ CREATE TABLE suggestion_tb
 );
 CREATE INDEX suggestion_tb_1_IDX ON suggestion_tb (package);
 CREATE INDEX suggestion_tb_2_IDX ON suggestion_tb (package,language,description_md5);
+
+
+
+DROP TABLE description_milestone_tb;
+
+CREATE TABLE description_milestone_tb (
+    description_milestone_id serial PRIMARY KEY,
+    description_id integer NOT NULL,
+    milestone text NOT NULL
+);
+
+CREATE INDEX description_milestone_tb1_IDX ON description_milestone_tb (description_id);
+CREATE INDEX description_milestone_tb2_IDX ON description_milestone_tb (milestone);
+CREATE UNIQUE INDEX description_milestone_tb3_IDX ON description_milestone_tb (description_id,milestone);
+
+DROP TABLE collection_milestone_tb;
+
+CREATE TABLE collection_milestone_tb (
+    collection_milestone_id serial PRIMARY KEY,
+    collection text NOT NULL,
+    name text NOT NULL,
+    nametype integer NOT NULL
+);
+
+CREATE INDEX collection_milestone_tb1_IDX ON collection_milestone_tb (name,nametype);
+CREATE UNIQUE INDEX collection_milestone_tb2_IDX ON collection_milestone_tb (name,nametype,collection);
+
+
+DROP TABLE statistic_tb;
+
+CREATE TABLE statistic_tb (
+    statistic_id serial PRIMARY KEY,
+    value integer NOT NULL,
+    date date NOT NULL,
+    stat text NOT NULL
+);
+
+CREATE INDEX statistic_tb1_IDX ON statistic_tb (stat);
+CREATE INDEX statistic_tb2_IDX ON statistic_tb (date);
+CREATE UNIQUE INDEX statistic_tb13IDX ON statistic_tb (stat,date);
+
