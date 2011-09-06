@@ -125,6 +125,7 @@ foreach (get_description_ids($dists)) {
 	#print "Source: $source\n";
 	#print "Package: $package\n";
 	#print "Dir: $dir\n";
+	if (defined $dir) {
 	mkdir "pos";
 	mkdir "pos/$lang";
 	mkdir "pos/$lang/$dists";
@@ -170,4 +171,12 @@ foreach (get_description_ids($dists)) {
 		print FILE "\n";
 	}
 	close (FILE);
+	} else {
+		print "dir is not defined!\n";
+		print "  for debug\n";
+		print "    description_id: $description_id\n";
+		print "    package:        $package\n";
+		print "    source:         $source\n";
+		print "\n";
+	}
 }
