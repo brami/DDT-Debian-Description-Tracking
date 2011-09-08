@@ -147,23 +147,6 @@ sub scan_packages_file {
 				$dbh->rollback; # undo the incomplete changes
 			}
 		}
-
-		my $version_id;
-
-		$sth = $dbh->prepare("SELECT version_id FROM version_tb WHERE description_id=? and version=?");
-		$sth->execute($description_id, $version);
-		($version_id) = $sth->fetchrow_array;
-
-		if (not $version_id) {
-			eval {
-				$dbh->do("INSERT INTO version_tb (description_id,version) VALUES (?,?);", undef, $description_id, $version);
-				$dbh->commit;   # commit the changes if we get this far
-			};
-			if ($@) {
-				warn "Packages2db.pl: failed to INSERT description_id '$description_id', version '$version' into version_tb: $@\n";
-				$dbh->rollback; # undo the incomplete changes
-			}
-		}
 	}
 
 	sub save_milestone_to_db {
